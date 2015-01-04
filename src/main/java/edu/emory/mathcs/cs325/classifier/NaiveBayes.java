@@ -13,45 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.ngrams;
-
-import java.util.HashMap;
-import java.util.Map;
+package edu.emory.mathcs.cs325.classifier;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Bigram
+public class NaiveBayes
 {
-	Map<String,Unigram> m_probs;
-	
-	public Bigram()
-	{
-		m_probs = new HashMap<>();
-	}
-	
-	public void add(String word1, String word2, int count)
-	{
-		Unigram unigram = m_probs.get(word1);
-		
-		if (unigram == null)
-		{
-			unigram = new Unigram();
-			m_probs.put(word1, unigram);
-		}
-		
-		unigram.add(word2, count);
-	}
-	
-	public double get(String word1, String word2)
-	{
-		Unigram unigram = m_probs.get(word1);
-		return (unigram != null) ? unigram.get(word2) : 0d;
-	}
 
-	public void finalize()
-	{
-		for (Unigram unigram : m_probs.values())
-			unigram.finalize();
-	}
 }

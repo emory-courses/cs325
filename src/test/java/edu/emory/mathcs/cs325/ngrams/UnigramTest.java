@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.ngrams;
+package edu.emory.mathcs.cs325.ngrams;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import edu.emory.mathcs.cs325.ngrams.Unigram;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

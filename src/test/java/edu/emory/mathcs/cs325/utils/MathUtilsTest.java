@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, Emory University
+ * Copyright 2014, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.classifier;
+package edu.emory.mathcs.cs325.utils;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NaiveBayes
+public class MathUtilsTest
 {
-
+	@Test
+	public void testSum()
+	{
+		assertEquals(MathUtils.getMiddleIndex(0, 10), 5);
+	}
 }
