@@ -17,37 +17,41 @@ package edu.emory.mathcs.ngrams;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Unigram
+public class Bigram
 {
-	private Map<String,Double> m_probs;
-	private int n_total;
+	Map<String,Unigram> m_probs;
 	
-	public Unigram()
+	public Bigram()
 	{
 		m_probs = new HashMap<>();
-		n_total = 0;
 	}
 	
-	public void add(String word, int count)
+	public void add(String word1, String word2, int count)
 	{
-		m_probs.compute(word, (k,v) -> (v == null) ? count : v+count);
-		n_total += count;
+		Unigram unigram = m_probs.get(word1);
+		
+		if (unigram == null)
+		{
+			unigram = new Unigram();
+			m_probs.put(word1, unigram);
+		}
+		
+		unigram.add(word2, count);
 	}
 	
-	public double get(String word)
+	public double get(String word1, String word2)
 	{
-		Double d = m_probs.get(word);
-		return (d != null) ? d : 0d;
+		Unigram unigram = m_probs.get(word1);
+		return (unigram != null) ? unigram.get(word2) : 0d;
 	}
-	
+
 	public void finalize()
 	{
-		for (Entry<String,Double> entry : m_probs.entrySet())
-			m_probs.compute(entry.getKey(), (k,v) -> v/n_total);		
+		for (Unigram unigram : m_probs.values())
+			unigram.finalize();
 	}
 }

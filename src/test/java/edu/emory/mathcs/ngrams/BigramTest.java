@@ -28,29 +28,28 @@ import org.junit.Test;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class UnigramTest
+public class BigramTest
 {
 	@Test
 	public void test()
 	{
-		Unigram unigram = new Unigram();
+		Bigram bigram = new Bigram();
 		
-		unigram.add("A", 1);
-		unigram.add("B", 2);
-		unigram.add("B", 4);
-		unigram.add("C", 3);
-		unigram.add("C", 6);
-		unigram.add("D", 4);
-		unigram.finalize();
+		bigram.add("A", "A1", 2);
+		bigram.add("A", "A2", 3);
+		bigram.add("B", "B1", 1);
+		bigram.add("B", "B2", 4);
+		bigram.finalize();
 
-		assertEquals(unigram.get("A"), 0.05, 0);
-		assertEquals(unigram.get("B"), 0.3 , 0);
-		assertEquals(unigram.get("C"), 0.45, 0);
-		assertEquals(unigram.get("D"), 0.2 , 0);
-		assertEquals(unigram.get("E"), 0   , 0);
+		assertEquals(bigram.get("A","A1"), 0.4, 0);
+		assertEquals(bigram.get("A","A2"), 0.6, 0);
+		assertEquals(bigram.get("B","B1"), 0.2, 0);;
+		assertEquals(bigram.get("B","B2"), 0.8, 0);
+		assertEquals(bigram.get("A","A0"), 0,   0);
+		assertEquals(bigram.get("C","A1"), 0,   0);
 	}
 	
-	void addAll(Unigram unigram, InputStream in)
+	void addAll(Bigram bigram, InputStream in)
 	{
 		try
 		{
@@ -62,10 +61,10 @@ public class UnigramTest
 			while ((line = reader.readLine()) != null)
 			{
 				t = p.split(line);
-				unigram.add(t[0], Integer.parseInt(t[1]));
+				bigram.add(t[0], t[1], Integer.parseInt(t[2]));
 			}
 			
-			unigram.finalize();
+			bigram.finalize();
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}
