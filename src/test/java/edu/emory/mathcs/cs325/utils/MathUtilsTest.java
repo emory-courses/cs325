@@ -25,7 +25,7 @@ import org.junit.Test;
 public class MathUtilsTest
 {
 	@Test
-	public void testSum()
+	public void getMiddleIndexTest()
 	{
 		assertEquals(MathUtils.getMiddleIndex(0, 10), 5);
 	}
