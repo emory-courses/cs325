@@ -15,25 +15,30 @@
  */
 package edu.emory.mathcs.ngrams;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.HashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Unigram
+public class Unigram extends HashMap<String,Double>
 {
-	public Unigram() {}
+	private static final long serialVersionUID = -5613317171603511430L;
+	private int n_total;
 	
-	public Unigram(InputStream in)
+	public Unigram()
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		
-		
-		
-		
-		
+		n_total = 0;
+	}
+	
+	public void add(String word, int count)
+	{
+		compute(word, (k,v) -> (v == null) ? count : v+count);
+		n_total += count;
+	}
+	
+	public void finalize()
+	{
+		for (Entry<String,Double> entry : entrySet())
+			compute(entry.getKey(), (k,v) -> v/n_total);		
 	}
 }
