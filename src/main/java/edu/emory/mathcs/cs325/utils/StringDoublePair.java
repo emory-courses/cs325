@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,45 @@ package edu.emory.mathcs.cs325.utils;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class MathUtils
+public class StringDoublePair implements Comparable<StringDoublePair>
 {
-	/** @return the double value of {@code numerator} / {@code denominator}. */
-	static public double divide(int numerator, int denominator)
+	private String s;
+	private double d;
+	
+	public StringDoublePair(String s, double d)
 	{
-		return (double)numerator / denominator;
+		set(s, d);
 	}
 	
-	static public void main(String[] args)
+	public String getString()
 	{
-		System.out.println(divide(1, 2));
+		return s;
+	}
+
+	public double getDouble()
+	{
+		return d;
+	}
+
+	public void set(String s, double d)
+	{
+		setString(s);
+		setDouble(d);
+	}
+	
+	public void setString(String s)
+	{
+		this.s = s;
+	}
+	
+	public void setDouble(double d)
+	{
+		this.d = d;
+	}
+
+	@Override
+	public int compareTo(StringDoublePair o)
+	{
+		return (int)Math.signum(d - o.d);
 	}
 }

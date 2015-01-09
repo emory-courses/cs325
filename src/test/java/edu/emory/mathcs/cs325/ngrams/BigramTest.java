@@ -17,15 +17,10 @@ package edu.emory.mathcs.cs325.ngrams;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.regex.Pattern;
-
 import org.junit.Test;
 
-import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
+import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -35,39 +30,29 @@ public class BigramTest
 	@Test
 	public void test()
 	{
-		Bigram bigram = new Bigram();
+		Bigram bigram = new Bigram(new NoSmoothing());
 		
 		bigram.add("A", "A1", 2);
 		bigram.add("A", "A2", 3);
 		bigram.add("B", "B1", 1);
 		bigram.add("B", "B2", 4);
-		bigram.finalize();
+		bigram.resetLikelihoods();
 
-		assertEquals(bigram.get("A","A1"), 0.4, 0);
-		assertEquals(bigram.get("A","A2"), 0.6, 0);
-		assertEquals(bigram.get("B","B1"), 0.2, 0);;
-		assertEquals(bigram.get("B","B2"), 0.8, 0);
-		assertEquals(bigram.get("A","A0"), 0,   0);
-		assertEquals(bigram.get("C","A1"), 0,   0);
-	}
-	
-	void addAll(Bigram bigram, InputStream in)
-	{
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			Pattern p = Pattern.compile("\t");
-			String line;
-			String[] t;
-			
-			while ((line = reader.readLine()) != null)
-			{
-				t = p.split(line);
-				bigram.add(t[0], t[1], Integer.parseInt(t[2]));
-			}
-			
-			bigram.finalize();
-		}
-		catch (IOException e) {e.printStackTrace();}
+		assertEquals(bigram.getLikelihood("A","A1"), 0.4, 0);
+		assertEquals(bigram.getLikelihood("A","A2"), 0.6, 0);
+		assertEquals(bigram.getLikelihood("B","B1"), 0.2, 0);;
+		assertEquals(bigram.getLikelihood("B","B2"), 0.8, 0);
+		assertEquals(bigram.getLikelihood("A","A0"),   0, 0);
+		assertEquals(bigram.getLikelihood("C","A1"),   0, 0);
+		
+		StringDoublePair p;
+		
+		p = bigram.getMaximumLikelihood("A");
+		assertEquals(p.getString(), "A2");
+		assertEquals(p.getDouble(), 0.6, 0);
+		
+		p = bigram.getMaximumLikelihood("B");
+		assertEquals(p.getString(), "B2");
+		assertEquals(p.getDouble(), 0.8, 0);
 	}
 }

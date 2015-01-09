@@ -25,8 +25,8 @@ import org.junit.Test;
 public class MathUtilsTest
 {
 	@Test
-	public void getMiddleIndexTest()
+	public void divideTest()
 	{
-		assertEquals(MathUtils.getMiddleIndex(0, 10), 5);
+		assertEquals(MathUtils.divide(1, 2), 0.5, 0);
 	}
 }

@@ -15,39 +15,87 @@
  */
 package edu.emory.mathcs.cs325.ngrams;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
+import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Unigram
 {
-	private Map<String,Double> m_probs;
-	private int n_total;
+	private Map<String,Double> m_likelihoods;
+	private Map<String,Long>   m_counts;
+	private long               t_counts;
+	private ISmoothing         i_smoothing;
 	
-	public Unigram()
+	public Unigram(ISmoothing smoothing)
 	{
-		m_probs = new HashMap<>();
-		n_total = 0;
+		m_counts = new HashMap<>();
+		t_counts = 0;
+		i_smoothing = smoothing;
 	}
 	
-	public void add(String word, int count)
+	/**
+	 * Increments the {@code count} of the {@code word}.
+	 * @param word  the word to be added.
+	 * @param count the count to be incremented.
+	 */
+	public void add(String word, long count)
 	{
-		m_probs.compute(word, (k,v) -> (v == null) ? count : v+count);
-		n_total += count;
+		m_counts.compute(word, (k,v) -> (v == null) ? count : v + count);
+		t_counts += count;
 	}
 	
-	public double get(String word)
+	/**
+	 * @return the likelihood of the {@code word}.
+	 * @param word the word to get the likelihood for.
+	 */
+	public double getLikelihood(String word)
 	{
-		Double d = m_probs.get(word);
-		return (d != null) ? d : 0d;
+		Double d = m_likelihoods.get(word);
+		return (d != null) ? d : i_smoothing.getUnseenLikelihood();
 	}
 	
-	public void finalize()
+	/** Resets all likelihoods using {@link #m_counts} and {@link #t_counts}. */
+	public void resetLikelihoods()
 	{
-		for (Entry<String,Double> entry : m_probs.entrySet())
-			m_probs.compute(entry.getKey(), (k,v) -> v/n_total);		
+		m_likelihoods = i_smoothing.getProbabilityMap(m_counts, t_counts);
+	}
+	
+	/**
+	 * @return the (word, likelihood) pair whose likelihood is the highest if exists; otherwise, {@code null}.
+	 * @see StringDoublePair
+	 */
+	public StringDoublePair getMaximumLikelihood()
+	{
+		if (m_likelihoods.isEmpty()) return null;
+		StringDoublePair p = new StringDoublePair(null, -1);
+		
+		for (Entry<String,Double> entry : m_likelihoods.entrySet())
+		{
+			if (p.getDouble() < entry.getValue())
+				p.set(entry.getKey(), entry.getValue());
+		}
+		
+		return p;
+	}
+	
+	/** @return the list of (word, likelihood) pairs sorted in descending order.  */
+	public List<StringDoublePair> toSortedList() 
+	{
+		List<StringDoublePair> list = new ArrayList<>(m_likelihoods.size());
+		
+		for (Entry<String,Double> entry : m_likelihoods.entrySet())
+			list.add(new StringDoublePair(entry.getKey(), entry.getValue()));
+		
+		Collections.sort(list, Collections.reverseOrder());
+		return list;
 	}
 }

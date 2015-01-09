@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.utils;
+package edu.emory.mathcs.cs325.ngrams.smoothing;
+
+import java.util.Map;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class MathUtils
+public interface ISmoothing
 {
-	/** @return the double value of {@code numerator} / {@code denominator}. */
-	static public double divide(int numerator, int denominator)
-	{
-		return (double)numerator / denominator;
-	}
-	
-	static public void main(String[] args)
-	{
-		System.out.println(divide(1, 2));
-	}
+	double getUnseenLikelihood();
+	Map<String,Double> getProbabilityMap(Map<String,Long> countMap, long totalCounts);
+	ISmoothing createInstance();
 }

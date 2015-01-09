@@ -17,15 +17,10 @@ package edu.emory.mathcs.cs325.ngrams;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.regex.Pattern;
-
 import org.junit.Test;
 
-import edu.emory.mathcs.cs325.ngrams.Unigram;
+import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
+import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -35,7 +30,7 @@ public class UnigramTest
 	@Test
 	public void test()
 	{
-		Unigram unigram = new Unigram();
+		Unigram unigram = new Unigram(new NoSmoothing());
 		
 		unigram.add("A", 1);
 		unigram.add("B", 2);
@@ -43,32 +38,17 @@ public class UnigramTest
 		unigram.add("C", 3);
 		unigram.add("C", 6);
 		unigram.add("D", 4);
-		unigram.finalize();
+		unigram.resetLikelihoods();
 
-		assertEquals(unigram.get("A"), 0.05, 0);
-		assertEquals(unigram.get("B"), 0.3 , 0);
-		assertEquals(unigram.get("C"), 0.45, 0);
-		assertEquals(unigram.get("D"), 0.2 , 0);
-		assertEquals(unigram.get("E"), 0   , 0);
-	}
-	
-	void addAll(Unigram unigram, InputStream in)
-	{
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			Pattern p = Pattern.compile("\t");
-			String line;
-			String[] t;
-			
-			while ((line = reader.readLine()) != null)
-			{
-				t = p.split(line);
-				unigram.add(t[0], Integer.parseInt(t[1]));
-			}
-			
-			unigram.finalize();
-		}
-		catch (IOException e) {e.printStackTrace();}
+		assertEquals(unigram.getLikelihood("A"), 0.05, 0);
+		assertEquals(unigram.getLikelihood("B"), 0.3 , 0);
+		assertEquals(unigram.getLikelihood("C"), 0.45, 0);
+		assertEquals(unigram.getLikelihood("D"), 0.2 , 0);
+		assertEquals(unigram.getLikelihood("E"), 0   , 0);
+		
+		StringDoublePair p = unigram.getMaximumLikelihood();
+
+		assertEquals(p.getString(), "C");
+		assertEquals(p.getDouble(), 0.45, 0);
 	}
 }

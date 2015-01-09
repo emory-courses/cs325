@@ -15,43 +15,82 @@
  */
 package edu.emory.mathcs.cs325.ngrams;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
+import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Bigram
 {
-	Map<String,Unigram> m_probs;
+	private Map<String,Unigram> m_unigrams;
+	private ISmoothing i_smoothing;
 	
-	public Bigram()
+	public Bigram(ISmoothing smoothing)
 	{
-		m_probs = new HashMap<>();
+		m_unigrams  = new HashMap<>();
+		i_smoothing = smoothing;
 	}
 	
-	public void add(String word1, String word2, int count)
+	/**
+	 * Increments the {@code count} of the {@code word1} and {@code word2} sequence.
+	 * @param word1 the first word.
+	 * @param word2 the second word following {@code word1}. 
+	 * @param count the count to be added.
+	 */
+	public void add(String word1, String word2, long count)
 	{
-		Unigram unigram = m_probs.get(word1);
+		Unigram unigram = m_unigrams.get(word1);
 		
 		if (unigram == null)
 		{
-			unigram = new Unigram();
-			m_probs.put(word1, unigram);
+			unigram = new Unigram(i_smoothing.createInstance());
+			m_unigrams.put(word1, unigram);
 		}
 		
 		unigram.add(word2, count);
 	}
 	
-	public double get(String word1, String word2)
+	/**
+	 * @return the likelihood of the {@code word1} and {@code word2} sequence if exists; otherwise, {@code 0}.
+	 * @param word1 the first word.
+	 * @param word2 the second word following {@code word1}.
+	 */
+	public double getLikelihood(String word1, String word2)
 	{
-		Unigram unigram = m_probs.get(word1);
-		return (unigram != null) ? unigram.get(word2) : 0d;
+		Unigram unigram = m_unigrams.get(word1);
+		return (unigram != null) ? unigram.getLikelihood(word2) : 0d;
 	}
-
-	public void finalize()
+	
+	/** Resets all likelihoods of {@link #m_unigrams}. */
+	public void resetLikelihoods()
 	{
-		for (Unigram unigram : m_probs.values())
-			unigram.finalize();
+		for (Unigram unigram : m_unigrams.values())
+			unigram.resetLikelihoods();
+	}
+	
+	/**
+	 * @return the (word, likelihood) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
+	 * @param word the first word.
+	 */
+	public StringDoublePair getMaximumLikelihood(String word)
+	{
+		Unigram unigram = m_unigrams.get(word);
+		return (unigram != null) ? unigram.getMaximumLikelihood() : null;
+	}
+	
+	/**
+	 * @return the list of (word, likelihood) pairs sorted in descending order whose words follow {@code word}.
+	 * @param word the first word.
+	 */
+	public List<StringDoublePair> getSortedList(String word)
+	{
+		Unigram unigram = m_unigrams.get(word);
+		return (unigram != null) ? unigram.toSortedList() : new ArrayList<>();
 	}
 }
