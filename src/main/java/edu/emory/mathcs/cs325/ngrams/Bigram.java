@@ -57,35 +57,35 @@ public class Bigram
 	}
 	
 	/**
-	 * @return the likelihood of the {@code word1} and {@code word2} sequence if exists; otherwise, {@code 0}.
+	 * @return the MLE of the {@code word1} and {@code word2} sequence if exists; otherwise, {@code 0}.
 	 * @param word1 the first word.
 	 * @param word2 the second word following {@code word1}.
 	 */
-	public double getLikelihood(String word1, String word2)
+	public double getMLE(String word1, String word2)
 	{
 		Unigram unigram = m_unigrams.get(word1);
-		return (unigram != null) ? unigram.getLikelihood(word2) : 0d;
+		return (unigram != null) ? unigram.getMLE(word2) : 0d;
 	}
 	
-	/** Resets all likelihoods of {@link #m_unigrams}. */
-	public void resetLikelihoods()
+	/** Resets all MLEs of {@link #m_unigrams}. */
+	public void resetMLEs()
 	{
 		for (Unigram unigram : m_unigrams.values())
-			unigram.resetLikelihoods();
+			unigram.resetMLEs();
 	}
 	
 	/**
-	 * @return the (word, likelihood) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
+	 * @return the (word, MLE) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
 	 * @param word the first word.
 	 */
-	public StringDoublePair getMaximumLikelihood(String word)
+	public StringDoublePair getBest(String word)
 	{
 		Unigram unigram = m_unigrams.get(word);
-		return (unigram != null) ? unigram.getMaximumLikelihood() : null;
+		return (unigram != null) ? unigram.getBest() : null;
 	}
 	
 	/**
-	 * @return the list of (word, likelihood) pairs sorted in descending order whose words follow {@code word}.
+	 * @return the list of (word, MLE) pairs sorted in descending order whose words follow {@code word}.
 	 * @param word the first word.
 	 */
 	public List<StringDoublePair> getSortedList(String word)

@@ -28,6 +28,11 @@ public class StringDoublePair implements Comparable<StringDoublePair>
 		set(s, d);
 	}
 	
+	public StringDoublePair(StringDoublePair p)
+	{
+		set(p.s, p.d);
+	}
+	
 	public String getString()
 	{
 		return s;
