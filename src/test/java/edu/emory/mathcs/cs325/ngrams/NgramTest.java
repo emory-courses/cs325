@@ -17,13 +17,9 @@ package edu.emory.mathcs.cs325.ngrams;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import org.junit.Test;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
-import edu.emory.mathcs.cs325.utils.IOUtils;
 import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
@@ -31,24 +27,6 @@ import edu.emory.mathcs.cs325.utils.StringDoublePair;
  */
 public class NgramTest
 {
-	@Test
-	public void test() throws IOException
-	{
-		Unigram unigram = new Unigram(new NoSmoothing());
-		Bigram bigram = new Bigram(new NoSmoothing());
-
-		IOUtils.readUnigrams(unigram, new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/1grams.txt"));
-		IOUtils.readBigrams (bigram , new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/2grams.txt"));
-		
-		String[] words = {"he","came","to","my","school","to","study"};
-		double prod = unigram.getMLE(words[0]);
-		
-		for (int i=1; i<words.length; i++)
-			prod *= bigram.getMLE(words[i-1], words[i]);
-		
-		System.out.println(prod);
-	}
-	
 	@Test
 	public void testUnigram()
 	{
