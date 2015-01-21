@@ -44,7 +44,7 @@ public class IOUtils
 				unigram.add(t[1], Long.parseLong(t[0]));
 			}
 			
-			unigram.resetMLEs();
+			unigram.estimateMaximumLikelihoods();
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}
@@ -64,7 +64,7 @@ public class IOUtils
 				bigram.add(t[1], t[2], Long.parseLong(t[0]));
 			}
 			
-			bigram.resetMLEs();
+			bigram.estimateMaximumLikelihoods();
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}

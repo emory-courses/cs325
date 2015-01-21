@@ -18,42 +18,63 @@ package edu.emory.mathcs.cs325.ngrams.smoothing;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.Unigram;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class LaplaceSmoothing implements ISmoothing
 {
-	private double d_prior;
-	private double d_unseenProbability;
+	protected double d_unseenLikelihood;
+	protected double d_alpha;
 	
-	public LaplaceSmoothing(double prior)
+	/**
+	 * Initializes the prior of Laplace smoothing.
+	 * @param alpha the prior.
+	 */
+	public LaplaceSmoothing(double alpha)
 	{
-		d_prior = prior;
+		d_alpha = alpha;
+	}
+	
+	@Override
+	public void estimateMaximumLikelihoods(Unigram unigram)
+	{
+		Map<String,Long> countMap = unigram.getCountMap();
+		double t = d_alpha * countMap.size() + unigram.getTotalCount();
+		Map<String,Double> map = new HashMap<>(countMap.size());
+		
+		for (Entry<String,Long> entry : countMap.entrySet())
+			map.put(entry.getKey(), (d_alpha + entry.getValue()) / t);
+
+		unigram.setLikelihoodMap(map);
+		d_unseenLikelihood = d_alpha / t;
+	}
+	
+	@Override
+	public void estimateMaximumLikelihoods(Bigram bigram)
+	{
+		Map<String,Unigram> unigramMap = bigram.getUnigramMap();
+		
+		for (Unigram unigram : unigramMap.values())
+			unigram.estimateMaximumLikelihoods();
+		
+		Set<String> allWords = bigram.getAllWords();
+		d_unseenLikelihood = d_alpha / (d_alpha * allWords.size());
 	}
 	
 	@Override
 	public double getUnseenLikelihood()
 	{
-		return d_unseenProbability;
-	}
-
-	@Override
-	public Map<String,Double> getProbabilityMap(Map<String,Long> countMap, long totalCounts)
-	{
-		final double t = d_prior * countMap.size() + totalCounts;
-		Map<String,Double> map = new HashMap<>(countMap.size());
-		
-		for (Entry<String,Long> entry : countMap.entrySet())
-			map.put(entry.getKey(), (d_prior + entry.getValue()) / t);
-
-		d_unseenProbability = d_prior / t;
-		return map;
+		return d_unseenLikelihood;
 	}
 
 	@Override
 	public ISmoothing createInstance()
 	{
-		return new LaplaceSmoothing(d_prior);
+		return new LaplaceSmoothing(d_alpha);
 	}
 }

@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.Unigram;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -31,14 +34,25 @@ public class NoSmoothing implements ISmoothing
 	}
 
 	@Override
-	public Map<String,Double> getProbabilityMap(Map<String, Long> countMap, long totalCounts)
+	public void estimateMaximumLikelihoods(Unigram unigram)
 	{
+		Map<String,Long> countMap = unigram.getCountMap();
+		long totalCount = unigram.getTotalCount();
 		Map<String,Double> map = new HashMap<>(countMap.size());
 		
 		for (Entry<String,Long> entry : countMap.entrySet())
-			map.put(entry.getKey(), (double)entry.getValue() / totalCounts);
+			map.put(entry.getKey(), (double)entry.getValue() / totalCount);
 		
-		return map;
+		unigram.setLikelihoodMap(map);
+	}
+	
+	@Override
+	public void estimateMaximumLikelihoods(Bigram bigram)
+	{
+		Map<String,Unigram> unigramMap = bigram.getUnigramMap();
+		
+		for (Unigram unigram : unigramMap.values())
+			unigram.estimateMaximumLikelihoods();
 	}
 
 	@Override

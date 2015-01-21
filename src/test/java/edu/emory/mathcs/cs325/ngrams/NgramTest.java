@@ -38,18 +38,18 @@ public class NgramTest
 		unigram.add("C", 3);
 		unigram.add("C", 6);
 		unigram.add("D", 4);
-		unigram.resetMLEs();
+		unigram.estimateMaximumLikelihoods();
 
-		assertEquals(unigram.getMLE("A"), 0.05, 0);
-		assertEquals(unigram.getMLE("B"), 0.3 , 0);
-		assertEquals(unigram.getMLE("C"), 0.45, 0);
-		assertEquals(unigram.getMLE("D"), 0.2 , 0);
-		assertEquals(unigram.getMLE("E"), 0   , 0);
+		assertEquals(0.05, unigram.getLikelihood("A"), 0);
+		assertEquals(0.3 , unigram.getLikelihood("B"), 0);
+		assertEquals(0.45, unigram.getLikelihood("C"), 0);
+		assertEquals(0.2 , unigram.getLikelihood("D"), 0);
+		assertEquals(0   , unigram.getLikelihood("E"), 0);
 		
 		StringDoublePair p = unigram.getBest();
 
-		assertEquals(p.getString(), "C");
-		assertEquals(p.getDouble(), 0.45, 0);
+		assertEquals("C" , p.getString());
+		assertEquals(0.45, p.getDouble(), 0);
 	}
 	
 	@Test
@@ -61,23 +61,23 @@ public class NgramTest
 		bigram.add("A", "A2", 3);
 		bigram.add("B", "B1", 1);
 		bigram.add("B", "B2", 4);
-		bigram.resetMLEs();
+		bigram.estimateMaximumLikelihoods();
 
-		assertEquals(bigram.getMLE("A","A1"), 0.4, 0);
-		assertEquals(bigram.getMLE("A","A2"), 0.6, 0);
-		assertEquals(bigram.getMLE("B","B1"), 0.2, 0);;
-		assertEquals(bigram.getMLE("B","B2"), 0.8, 0);
-		assertEquals(bigram.getMLE("A","A0"),   0, 0);
-		assertEquals(bigram.getMLE("C","A1"),   0, 0);
+		assertEquals(0.4, bigram.getLikelihood("A","A1"), 0);
+		assertEquals(0.6, bigram.getLikelihood("A","A2"), 0);
+		assertEquals(0.2, bigram.getLikelihood("B","B1"), 0);;
+		assertEquals(0.8, bigram.getLikelihood("B","B2"), 0);
+		assertEquals(0  , bigram.getLikelihood("A","A0"), 0);
+		assertEquals(0  , bigram.getLikelihood("C","A1"), 0);
 		
 		StringDoublePair p;
 		
 		p = bigram.getBest("A");
-		assertEquals(p.getString(), "A2");
-		assertEquals(p.getDouble(), 0.6, 0);
+		assertEquals("A2", p.getString());
+		assertEquals(0.6 , p.getDouble(), 0);
 		
 		p = bigram.getBest("B");
-		assertEquals(p.getString(), "B2");
-		assertEquals(p.getDouble(), 0.8, 0);
+		assertEquals("B2", p.getString());
+		assertEquals(0.8 , p.getDouble(), 0);
 	}
 }

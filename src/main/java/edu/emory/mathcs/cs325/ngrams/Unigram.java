@@ -54,23 +54,23 @@ public class Unigram
 	}
 	
 	/**
-	 * @return the MLE of the {@code word}.
-	 * @param word the word to get the MLE for.
+	 * @return the likelihood of the {@code word}.
+	 * @param word the word to get the likelihood for.
 	 */
-	public double getMLE(String word)
+	public double getLikelihood(String word)
 	{
 		Double d = m_likelihoods.get(word);
 		return (d != null) ? d : i_smoothing.getUnseenLikelihood();
 	}
 	
-	/** Resets all MLEs using {@link #m_counts} and {@link #t_counts}. */
-	public void resetMLEs()
+	/** Estimates the maximum likelihoods of all unigrams. */
+	public void estimateMaximumLikelihoods()
 	{
-		m_likelihoods = i_smoothing.getProbabilityMap(m_counts, t_counts);
+		i_smoothing.estimateMaximumLikelihoods(this);
 	}
 	
 	/**
-	 * @return the (word, MLE) pair whose likelihood is the highest if exists; otherwise, {@code null}.
+	 * @return the (word, likelihood) pair whose likelihood is the highest if exists; otherwise, {@code null}.
 	 * @see StringDoublePair
 	 */
 	public StringDoublePair getBest()
@@ -87,7 +87,7 @@ public class Unigram
 		return p;
 	}
 	
-	/** @return the list of (word, MLE) pairs sorted in descending order.  */
+	/** @return the list of (word, likelihood) pairs sorted in descending order.  */
 	public List<StringDoublePair> toSortedList() 
 	{
 		List<StringDoublePair> list = new ArrayList<>(m_likelihoods.size());
@@ -97,5 +97,28 @@ public class Unigram
 		
 		Collections.sort(list, Collections.reverseOrder());
 		return list;
+	}
+	
+	/** @return the total count of all words. */
+	public long getTotalCount()
+	{
+		return t_counts;
+	}
+	
+	/** @return the map whose keys and values are the words and their counts. */
+	public Map<String,Long> getCountMap()
+	{
+		return m_counts;
+	}
+	
+	public Map<String,Double> getLikelihoodMap()
+	{
+		return m_likelihoods;
+	}
+	
+	/** Assigns the likelihood map to this unigram. */
+	public void setLikelihoodMap(Map<String,Double> map)
+	{
+		m_likelihoods = map;
 	}
 }

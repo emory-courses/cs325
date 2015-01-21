@@ -15,14 +15,29 @@
  */
 package edu.emory.mathcs.cs325.ngrams.smoothing;
 
-import java.util.Map;
+import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.Unigram;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public interface ISmoothing
 {
+	/**
+	 * Estimates the maximum likelihoods of all words in {@code unigram}.
+	 * @param unigram the unigram consisting of words and their counts. 
+	 */
+	void estimateMaximumLikelihoods(Unigram unigram);
+	
+	/**
+	 * Estimates the maximum likelihoods of all words in {@code bigram}.
+	 * @param bigram the bigram consisting of words and their counts. 
+	 */
+	void estimateMaximumLikelihoods(Bigram bigram);
+
+	/** @return the likelihood of unseen word. */
 	double getUnseenLikelihood();
-	Map<String,Double> getProbabilityMap(Map<String,Long> countMap, long totalCounts);
+
+	/** @return a new smoothing instance. */
 	ISmoothing createInstance();
 }

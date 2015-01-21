@@ -17,8 +17,11 @@ package edu.emory.mathcs.cs325.ngrams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
 import edu.emory.mathcs.cs325.utils.StringDoublePair;
@@ -57,25 +60,24 @@ public class Bigram
 	}
 	
 	/**
-	 * @return the MLE of the {@code word1} and {@code word2} sequence if exists; otherwise, {@code 0}.
+	 * @return the likelihood of the {@code word1} and {@code word2} sequence if exists; otherwise, {@code 0}.
 	 * @param word1 the first word.
 	 * @param word2 the second word following {@code word1}.
 	 */
-	public double getMLE(String word1, String word2)
+	public double getLikelihood(String word1, String word2)
 	{
 		Unigram unigram = m_unigrams.get(word1);
-		return (unigram != null) ? unigram.getMLE(word2) : 0d;
+		return (unigram != null) ? unigram.getLikelihood(word2) : i_smoothing.getUnseenLikelihood();
 	}
 	
-	/** Resets all MLEs of {@link #m_unigrams}. */
-	public void resetMLEs()
+	/** Estimates the maximum likelihoods of all bigrams. */
+	public void estimateMaximumLikelihoods()
 	{
-		for (Unigram unigram : m_unigrams.values())
-			unigram.resetMLEs();
+		i_smoothing.estimateMaximumLikelihoods(this);
 	}
 	
 	/**
-	 * @return the (word, MLE) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
+	 * @return the (word, likelihood) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
 	 * @param word the first word.
 	 */
 	public StringDoublePair getBest(String word)
@@ -85,12 +87,31 @@ public class Bigram
 	}
 	
 	/**
-	 * @return the list of (word, MLE) pairs sorted in descending order whose words follow {@code word}.
+	 * @return the list of (word, likelihood) pairs sorted in descending order whose words follow {@code word}.
 	 * @param word the first word.
 	 */
 	public List<StringDoublePair> getSortedList(String word)
 	{
 		Unigram unigram = m_unigrams.get(word);
 		return (unigram != null) ? unigram.toSortedList() : new ArrayList<>();
+	}
+	
+	/** @return the map whose keys and values are words and their unigram maps. */
+	public Map<String,Unigram> getUnigramMap()
+	{
+		return m_unigrams;
+	}
+	
+	public Set<String> getAllWords()
+	{
+		Set<String> set = new HashSet<>();
+		
+		for (Entry<String,Unigram> entry : m_unigrams.entrySet())
+		{
+			set.add(entry.getKey());
+			set.addAll(entry.getValue().getCountMap().keySet());
+		}
+		
+		return set;
 	}
 }
