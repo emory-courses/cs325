@@ -17,10 +17,11 @@ package edu.emory.mathcs.cs325.ngrams;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map.Entry;
+
 import org.junit.Test;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
-import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -46,10 +47,10 @@ public class NgramTest
 		assertEquals(0.2 , unigram.getLikelihood("D"), 0);
 		assertEquals(0   , unigram.getLikelihood("E"), 0);
 		
-		StringDoublePair p = unigram.getBest();
+		Entry<String,Double> p = unigram.getBest();
 
-		assertEquals("C" , p.getString());
-		assertEquals(0.45, p.getDouble(), 0);
+		assertEquals("C" , p.getKey());
+		assertEquals(0.45, p.getValue(), 0);
 	}
 	
 	@Test
@@ -70,14 +71,14 @@ public class NgramTest
 		assertEquals(0  , bigram.getLikelihood("A","A0"), 0);
 		assertEquals(0  , bigram.getLikelihood("C","A1"), 0);
 		
-		StringDoublePair p;
+		Entry<String,Double> p;
 		
 		p = bigram.getBest("A");
-		assertEquals("A2", p.getString());
-		assertEquals(0.6 , p.getDouble(), 0);
+		assertEquals("A2", p.getKey());
+		assertEquals(0.6 , p.getValue(), 0);
 		
 		p = bigram.getBest("B");
-		assertEquals("B2", p.getString());
-		assertEquals(0.8 , p.getDouble(), 0);
+		assertEquals("B2", p.getKey());
+		assertEquals(0.8 , p.getValue(), 0);
 	}
 }

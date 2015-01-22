@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
-import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -48,15 +47,13 @@ public class Bigram
 	 */
 	public void add(String word1, String word2, long count)
 	{
-		Unigram unigram = m_unigrams.get(word1);
-		
-		if (unigram == null)
-		{
-			unigram = new Unigram(i_smoothing.createInstance());
-			m_unigrams.put(word1, unigram);
-		}
-		
-		unigram.add(word2, count);
+		m_unigrams.computeIfAbsent(word1, key -> new Unigram(i_smoothing.createInstance())).add(word2, count);
+	}
+	
+	/** Estimates the maximum likelihoods of all bigrams. */
+	public void estimateMaximumLikelihoods()
+	{
+		i_smoothing.estimateMaximumLikelihoods(this);
 	}
 	
 	/**
@@ -70,17 +67,11 @@ public class Bigram
 		return (unigram != null) ? unigram.getLikelihood(word2) : i_smoothing.getUnseenLikelihood();
 	}
 	
-	/** Estimates the maximum likelihoods of all bigrams. */
-	public void estimateMaximumLikelihoods()
-	{
-		i_smoothing.estimateMaximumLikelihoods(this);
-	}
-	
 	/**
 	 * @return the (word, likelihood) pair whose likelihood is the highest among words following {@code word} if exists; otherwise, {@code null}.
 	 * @param word the first word.
 	 */
-	public StringDoublePair getBest(String word)
+	public Entry<String,Double> getBest(String word)
 	{
 		Unigram unigram = m_unigrams.get(word);
 		return (unigram != null) ? unigram.getBest() : null;
@@ -90,7 +81,7 @@ public class Bigram
 	 * @return the list of (word, likelihood) pairs sorted in descending order whose words follow {@code word}.
 	 * @param word the first word.
 	 */
-	public List<StringDoublePair> getSortedList(String word)
+	public List<Entry<String,Double>> getSortedList(String word)
 	{
 		Unigram unigram = m_unigrams.get(word);
 		return (unigram != null) ? unigram.toSortedList() : new ArrayList<>();

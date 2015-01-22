@@ -15,9 +15,8 @@
  */
 package edu.emory.mathcs.cs325.ngrams.smoothing;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.cs325.ngrams.Bigram;
 import edu.emory.mathcs.cs325.ngrams.Unigram;
@@ -37,12 +36,7 @@ public class NoSmoothing implements ISmoothing
 	public void estimateMaximumLikelihoods(Unigram unigram)
 	{
 		Map<String,Long> countMap = unigram.getCountMap();
-		long totalCount = unigram.getTotalCount();
-		Map<String,Double> map = new HashMap<>(countMap.size());
-		
-		for (Entry<String,Long> entry : countMap.entrySet())
-			map.put(entry.getKey(), (double)entry.getValue() / totalCount);
-		
+		Map<String,Double> map = countMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> (double)entry.getValue()/unigram.getTotalCount()));
 		unigram.setLikelihoodMap(map);
 	}
 	
@@ -50,9 +44,7 @@ public class NoSmoothing implements ISmoothing
 	public void estimateMaximumLikelihoods(Bigram bigram)
 	{
 		Map<String,Unigram> unigramMap = bigram.getUnigramMap();
-		
-		for (Unigram unigram : unigramMap.values())
-			unigram.estimateMaximumLikelihoods();
+		unigramMap.values().stream().forEach(unigram -> unigram.estimateMaximumLikelihoods());
 	}
 
 	@Override

@@ -15,15 +15,14 @@
  */
 package edu.emory.mathcs.cs325.ngrams;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
-import edu.emory.mathcs.cs325.utils.StringDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -49,18 +48,8 @@ public class Unigram
 	 */
 	public void add(String word, long count)
 	{
-		m_counts.compute(word, (k,v) -> (v == null) ? count : v + count);
+		m_counts.merge(word, count, (oldValue, newValue) -> oldValue + newValue);
 		t_counts += count;
-	}
-	
-	/**
-	 * @return the likelihood of the {@code word}.
-	 * @param word the word to get the likelihood for.
-	 */
-	public double getLikelihood(String word)
-	{
-		Double d = m_likelihoods.get(word);
-		return (d != null) ? d : i_smoothing.getUnseenLikelihood();
 	}
 	
 	/** Estimates the maximum likelihoods of all unigrams. */
@@ -70,33 +59,24 @@ public class Unigram
 	}
 	
 	/**
-	 * @return the (word, likelihood) pair whose likelihood is the highest if exists; otherwise, {@code null}.
-	 * @see StringDoublePair
+	 * @return the likelihood of the {@code word}.
+	 * @param word the word to get the likelihood for.
 	 */
-	public StringDoublePair getBest()
+	public double getLikelihood(String word)
 	{
-		if (m_likelihoods.isEmpty()) return null;
-		StringDoublePair p = new StringDoublePair(null, -1);
-		
-		for (Entry<String,Double> entry : m_likelihoods.entrySet())
-		{
-			if (p.getDouble() < entry.getValue())
-				p.set(entry.getKey(), entry.getValue());
-		}
-		
-		return p;
+		return m_likelihoods.getOrDefault(word, i_smoothing.getUnseenLikelihood());
+	}
+	
+	/** @return the (word, likelihood) pair whose likelihood is the highest if exists; otherwise, {@code null}. */
+	public Entry<String,Double> getBest()
+	{
+		return m_likelihoods.entrySet().stream().max(Entry.comparingByValue()).orElse(null);
 	}
 	
 	/** @return the list of (word, likelihood) pairs sorted in descending order.  */
-	public List<StringDoublePair> toSortedList() 
+	public List<Entry<String,Double>> toSortedList() 
 	{
-		List<StringDoublePair> list = new ArrayList<>(m_likelihoods.size());
-		
-		for (Entry<String,Double> entry : m_likelihoods.entrySet())
-			list.add(new StringDoublePair(entry.getKey(), entry.getValue()));
-		
-		Collections.sort(list, Collections.reverseOrder());
-		return list;
+		return m_likelihoods.entrySet().stream().sorted(Entry.comparingByValue(Collections.reverseOrder())).collect(Collectors.toList());
 	}
 	
 	/** @return the total count of all words. */
