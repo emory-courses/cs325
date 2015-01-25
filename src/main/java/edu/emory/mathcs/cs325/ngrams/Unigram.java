@@ -15,12 +15,12 @@
  */
 package edu.emory.mathcs.cs325.ngrams;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import edu.emory.mathcs.cs325.ngrams.smoothing.ISmoothing;
 
@@ -48,7 +48,7 @@ public class Unigram
 	 */
 	public void add(String word, long count)
 	{
-		m_counts.merge(word, count, (oldValue, newValue) -> oldValue + newValue);
+		m_counts.merge(word, count, (oldCount, newCount) -> oldCount + newCount);
 		t_counts += count;
 	}
 	
@@ -70,13 +70,17 @@ public class Unigram
 	/** @return the (word, likelihood) pair whose likelihood is the highest if exists; otherwise, {@code null}. */
 	public Entry<String,Double> getBest()
 	{
-		return m_likelihoods.entrySet().stream().max(Entry.comparingByValue()).orElse(null);
+//		return m_likelihoods.entrySet().stream().max(Entry.comparingByValue()).orElse(null);
+		return m_likelihoods.isEmpty() ? null : Collections.max(m_likelihoods.entrySet(), Entry.comparingByValue());
 	}
 	
 	/** @return the list of (word, likelihood) pairs sorted in descending order.  */
 	public List<Entry<String,Double>> toSortedList() 
 	{
-		return m_likelihoods.entrySet().stream().sorted(Entry.comparingByValue(Collections.reverseOrder())).collect(Collectors.toList());
+//		return m_likelihoods.entrySet().stream().sorted(Entry.comparingByValue(Collections.reverseOrder())).collect(Collectors.toList());
+		List<Entry<String,Double>> list = new ArrayList<>(m_likelihoods.entrySet());
+		Collections.sort(list, Entry.comparingByValue(Collections.reverseOrder()));
+		return list;
 	}
 	
 	/** @return the total count of all words. */

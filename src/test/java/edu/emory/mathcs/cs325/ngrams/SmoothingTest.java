@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.cs325.ngrams.smoothing.DiscountSmoothing;
 import edu.emory.mathcs.cs325.ngrams.smoothing.LaplaceSmoothing;
 
 /**
@@ -27,7 +28,7 @@ import edu.emory.mathcs.cs325.ngrams.smoothing.LaplaceSmoothing;
 public class SmoothingTest
 {
 	@Test
-	public void testUnigramLaplace()
+	public void testLaplaceUnigram()
 	{
 		Unigram unigram = new Unigram(new LaplaceSmoothing(1));
 		
@@ -43,7 +44,7 @@ public class SmoothingTest
 	}
 	
 	@Test
-	public void testBigramLaplace()
+	public void testLaplaceBigram()
 	{
 		Bigram bigram = new Bigram(new LaplaceSmoothing(1));
 		
@@ -53,12 +54,50 @@ public class SmoothingTest
 		bigram.add("B", "B2", 3);
 		bigram.estimateMaximumLikelihoods();
 
-		assertEquals(0.4, bigram.getLikelihood("A","A1"), 0);
-		assertEquals(0.6, bigram.getLikelihood("A","A2"), 0);
-		assertEquals(0.6, bigram.getLikelihood("B","B1"), 0);
-		assertEquals(0.4, bigram.getLikelihood("B","B2"), 0);
-		assertEquals(0.2, bigram.getLikelihood("A","A0"), 0);
-		assertEquals(0.1, bigram.getLikelihood("B","B0"), 0);
-		assertEquals(0  , bigram.getLikelihood("C","A1"), 0);
+		assertEquals( 0.4, bigram.getLikelihood("A","A1"), 0);
+		assertEquals( 0.6, bigram.getLikelihood("A","A2"), 0);
+		assertEquals( 0.6, bigram.getLikelihood("B","B1"), 0);
+		assertEquals( 0.4, bigram.getLikelihood("B","B2"), 0);
+		assertEquals( 0.2, bigram.getLikelihood("A","A0"), 0);
+		assertEquals( 0.1, bigram.getLikelihood("B","B0"), 0);
+		assertEquals(1d/6, bigram.getLikelihood("C","A1"), 0);
+	}
+	
+	@Test
+	public void testDiscountUnigram()
+	{
+		Unigram unigram = new Unigram(new DiscountSmoothing(0.5));
+		double eps = 0.000001;
+		unigram.add("A", 1);
+		unigram.add("B", 2);
+		unigram.add("C", 3);
+		unigram.add("D", 4);
+		unigram.estimateMaximumLikelihoods();
+
+		assertEquals(0.095, unigram.getLikelihood("A"), eps);
+		assertEquals(0.195, unigram.getLikelihood("B"), eps);
+		assertEquals(0.295, unigram.getLikelihood("C"), eps);
+		assertEquals(0.395, unigram.getLikelihood("D"), eps);
+		assertEquals( 0.05, unigram.getLikelihood("E"), 0);
+	}
+	
+//	@Test
+	public void testDiscountBigram()
+	{
+		Bigram bigram = new Bigram(new DiscountSmoothing(1));
+		
+		bigram.add("A", "A1", 1);
+		bigram.add("A", "A2", 2);
+		bigram.add("B", "B1", 5);
+		bigram.add("B", "B2", 3);
+		bigram.estimateMaximumLikelihoods();
+
+		assertEquals( 0.4, bigram.getLikelihood("A","A1"), 0);
+		assertEquals( 0.6, bigram.getLikelihood("A","A2"), 0);
+		assertEquals( 0.6, bigram.getLikelihood("B","B1"), 0);
+		assertEquals( 0.4, bigram.getLikelihood("B","B2"), 0);
+		assertEquals( 0.2, bigram.getLikelihood("A","A0"), 0);
+		assertEquals( 0.1, bigram.getLikelihood("B","B0"), 0);
+		assertEquals(1d/6, bigram.getLikelihood("C","A1"), 0);
 	}
 }

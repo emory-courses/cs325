@@ -16,9 +16,8 @@
 package edu.emory.mathcs.cs325.ngrams.smoothing;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.cs325.ngrams.Bigram;
 import edu.emory.mathcs.cs325.ngrams.Unigram;
@@ -26,30 +25,27 @@ import edu.emory.mathcs.cs325.ngrams.Unigram;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DiscountSmoothing extends LaplaceSmoothing
+public class DiscountSmoothing implements ISmoothing
 {
+	private double d_unseenLikelihood;
+	private double d_alpha;
+	
 	/**
 	 * Initializes the prior of discount smoothing.
 	 * @param alpha the discount rate (<= 1).
 	 */
 	public DiscountSmoothing(double alpha)
 	{
-		super(alpha);
+		d_alpha = alpha;
 	}
 	
 	@Override
 	public void estimateMaximumLikelihoods(Unigram unigram)
 	{
 		Map<String,Long> countMap = unigram.getCountMap();
-		int size = countMap.size();
-		
-		d_unseenLikelihood = d_alpha * Collections.min(countMap.values());
-		Map<String,Double> map = new HashMap<>(size);
-		double d = d_unseenLikelihood / size;
-		
-		for (Entry<String,Long> entry : countMap.entrySet())
-			map.put(entry.getKey(), (entry.getValue() / size) - d);
-
+		long totalCount = unigram.getTotalCount();
+		d_unseenLikelihood = d_alpha * Collections.min(countMap.values()) / totalCount;
+		Map<String,Double> map = countMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> (entry.getValue() - d_unseenLikelihood) / totalCount));
 		unigram.setLikelihoodMap(map);
 	}
 	
@@ -61,10 +57,10 @@ public class DiscountSmoothing extends LaplaceSmoothing
 		for (Unigram unigram : unigramMap.values())
 			unigram.estimateMaximumLikelihoods();
 		
-		d_unseenLikelihood =  d_alpha * getMin(unigramMap);
+		d_unseenLikelihood =  d_alpha * min(unigramMap);
 	}
 	
-	private double getMin(Map<String,Unigram> unigramMap)
+	private double min(Map<String,Unigram> unigramMap)
 	{
 		double min = Double.MAX_VALUE;
 		
@@ -72,6 +68,12 @@ public class DiscountSmoothing extends LaplaceSmoothing
 			min = Math.min(min, unigram.getLikelihood(null));
 		
 		return min;
+	}
+	
+	@Override
+	public double getUnseenLikelihood()
+	{
+		return d_unseenLikelihood;
 	}
 
 	@Override

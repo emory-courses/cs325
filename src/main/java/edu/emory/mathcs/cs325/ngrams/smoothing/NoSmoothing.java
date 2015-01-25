@@ -44,7 +44,7 @@ public class NoSmoothing implements ISmoothing
 	public void estimateMaximumLikelihoods(Bigram bigram)
 	{
 		Map<String,Unigram> unigramMap = bigram.getUnigramMap();
-		unigramMap.values().stream().forEach(unigram -> unigram.estimateMaximumLikelihoods());
+		for (Unigram unigram : unigramMap.values()) unigram.estimateMaximumLikelihoods();
 	}
 
 	@Override

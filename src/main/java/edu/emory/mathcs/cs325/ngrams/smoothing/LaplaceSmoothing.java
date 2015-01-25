@@ -15,10 +15,8 @@
  */
 package edu.emory.mathcs.cs325.ngrams.smoothing;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.cs325.ngrams.Bigram;
 import edu.emory.mathcs.cs325.ngrams.Unigram;
@@ -28,8 +26,8 @@ import edu.emory.mathcs.cs325.ngrams.Unigram;
  */
 public class LaplaceSmoothing implements ISmoothing
 {
-	protected double d_unseenLikelihood;
-	protected double d_alpha;
+	private double d_unseenLikelihood;
+	private double d_alpha;
 	
 	/**
 	 * Initializes the prior of Laplace smoothing.
@@ -45,11 +43,7 @@ public class LaplaceSmoothing implements ISmoothing
 	{
 		Map<String,Long> countMap = unigram.getCountMap();
 		double t = d_alpha * countMap.size() + unigram.getTotalCount();
-		Map<String,Double> map = new HashMap<>(countMap.size());
-		
-		for (Entry<String,Long> entry : countMap.entrySet())
-			map.put(entry.getKey(), (d_alpha + entry.getValue()) / t);
-
+		Map<String,Double> map = countMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> (d_alpha + entry.getValue())/t));
 		unigram.setLikelihoodMap(map);
 		d_unseenLikelihood = d_alpha / t;
 	}
@@ -62,8 +56,7 @@ public class LaplaceSmoothing implements ISmoothing
 		for (Unigram unigram : unigramMap.values())
 			unigram.estimateMaximumLikelihoods();
 		
-		Set<String> allWords = bigram.getAllWords();
-		d_unseenLikelihood = d_alpha / (d_alpha * allWords.size());
+		d_unseenLikelihood = 1d / bigram.getWordSet().size();
 	}
 	
 	@Override

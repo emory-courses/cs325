@@ -93,7 +93,7 @@ public class Bigram
 		return m_unigrams;
 	}
 	
-	public Set<String> getAllWords()
+	public Set<String> getWordSet()
 	{
 		Set<String> set = new HashSet<>();
 		
