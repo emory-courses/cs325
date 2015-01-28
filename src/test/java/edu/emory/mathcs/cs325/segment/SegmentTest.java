@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.ngrams;
+package edu.emory.mathcs.cs325.segment;
 
 import java.io.FileInputStream;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.Unigram;
 import edu.emory.mathcs.cs325.ngrams.model.Backoff;
 import edu.emory.mathcs.cs325.ngrams.model.ILanguageModel;
 import edu.emory.mathcs.cs325.ngrams.smoothing.DiscountSmoothing;
+import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
+import edu.emory.mathcs.cs325.segment.AbstractSegment;
 import edu.emory.mathcs.cs325.segment.Segment;
 import edu.emory.mathcs.cs325.segment.Sequence;
 import edu.emory.mathcs.cs325.utils.IOUtils;
@@ -35,41 +39,25 @@ public class SegmentTest
 	public void test() throws Exception
 	{
 		Unigram unigram = new Unigram(new DiscountSmoothing(0.9));
-		Bigram bigram = new Bigram(new DiscountSmoothing(1.0));
+		Bigram bigram = new Bigram(new NoSmoothing());
 
 		IOUtils.readUnigrams(unigram, new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/1grams.txt"));
 		IOUtils.readBigrams (bigram , new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/2grams.txt"));
 		
-		ILanguageModel model = new Backoff(unigram, bigram, 0.01);
-		Segment segment = new Segment(model);
-		String s = "therealdeal";
+		double unigramWeight = 0.01;
+		ILanguageModel model = new Backoff(unigram, bigram, unigramWeight);
+		AbstractSegment segment = new Segment(model);
+		
+		test(segment, "therealdeal");
+		test(segment, "isitoveryet");
+		test(segment, "isplayingnow");
+		test(segment, "thisiswhoweare");
+		test(segment, "areallygoodjob");
+	}
+	
+	void test(AbstractSegment segment, String s)
+	{
 		Sequence sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
-		
-		s = "isitoveryet";
-		sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
-
-		s = "isplayingnow";
-		sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
-		
-		s = "thisiswhoweare";
-		sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
-		
-		s = "alliwant";
-		sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
-		
-		s = "areallygoodjob";
-		sequence = segment.segment(s);
-		System.out.println(sequence.getSequence());
-		System.out.println(sequence.getMaximumLikelihood());
+		System.out.println(sequence.getSequence()+" "+sequence.getMaximumLikelihood());		
 	}
 }

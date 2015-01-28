@@ -30,6 +30,11 @@ public class Backoff implements ILanguageModel
 	private Bigram  n_2gram;
 	private double  d_1gramWeight;
 	
+	/**
+	 * @param unigram the unigram with smoothing.
+	 * @param bigram the bigram with/without smoothing.
+	 * @param alpha the prior.
+	 */
 	public Backoff(Unigram unigram, Bigram bigram, double alpha)
 	{
 		n_1gram = unigram;

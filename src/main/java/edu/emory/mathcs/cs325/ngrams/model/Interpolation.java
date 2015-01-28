@@ -29,6 +29,12 @@ public class Interpolation implements ILanguageModel
 	private double  d_1gramWeight;
 	private double  d_2gramWeight;
 	
+	/**
+	 * @param unigram the unigram with smoothing.
+	 * @param bigram the bigram with smoothing.
+	 * @param unigramWeight the unigram weight.
+	 * @param bigramWeight the bigram weight.
+	 */
 	public Interpolation(Unigram unigram, Bigram bigram, int unigramWeight, int bigramWeight)
 	{
 		n_1gram = unigram;

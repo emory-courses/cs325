@@ -32,7 +32,7 @@ public abstract class AbstractSegment
 	
 	/**
 	 * @return the word sequence segmented from the string with the highest probability. 
-	 * @param the string to segment.
+	 * @param s the string to segment.
 	 */
 	public abstract Sequence segment(String s);
 }
