@@ -93,6 +93,12 @@ public class Bigram
 		return m_unigrams;
 	}
 	
+	public boolean contains(String word1, String word2)
+	{
+		Unigram unigram = m_unigrams.get(word1);
+		return (unigram != null) && unigram.contains(word2); 
+	}
+	
 	public Set<String> getWordSet()
 	{
 		Set<String> set = new HashSet<>();

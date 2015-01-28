@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.utils;
+package edu.emory.mathcs.cs325.segment;
 
-import java.util.Collection;
+import edu.emory.mathcs.cs325.ngrams.model.ILanguageModel;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class MathUtils
+public abstract class AbstractSegment
 {
-	static public double average(Collection<Double> col)
+	protected ILanguageModel l_model;
+	
+	/** @param model a language model. */
+	public AbstractSegment(ILanguageModel model)
 	{
-		return sum(col) / col.size();
+		l_model = model;
 	}
 	
-	static public double sum(Collection<Double> col)
-	{
-		double sum = 0;
-		for (double key : col) sum += key;
-		return sum;
-	}
-	
-	/** @return the double value of {@code numerator} / {@code denominator}. */
-	static public double divide(int numerator, int denominator)
-	{
-		return (double)numerator / denominator;
-	}
-	
-	static public void main(String[] args)
-	{
-		System.out.println(divide(1, 2));
-	}
+	/**
+	 * @return the word sequence segmented from the string with the highest probability. 
+	 * @param the string to segment.
+	 */
+	public abstract Sequence segment(String s);
 }

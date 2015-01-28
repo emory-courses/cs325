@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, Emory University
+ * Copyright 2015, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.utils;
-
-import java.util.Collection;
+package edu.emory.mathcs.cs325.ngrams.model;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class MathUtils
+public interface ILanguageModel
 {
-	static public double average(Collection<Double> col)
-	{
-		return sum(col) / col.size();
-	}
-	
-	static public double sum(Collection<Double> col)
-	{
-		double sum = 0;
-		for (double key : col) sum += key;
-		return sum;
-	}
-	
-	/** @return the double value of {@code numerator} / {@code denominator}. */
-	static public double divide(int numerator, int denominator)
-	{
-		return (double)numerator / denominator;
-	}
-	
-	static public void main(String[] args)
-	{
-		System.out.println(divide(1, 2));
-	}
+	/**
+	 * @return the likelihood of the {@code word1} and {@code word2} sequence. 
+	 * @param word1 the first word.
+	 * @param word2 the second word following {@code word1}.
+	 */
+	double getLikelihood(String word1, String word2);
 }

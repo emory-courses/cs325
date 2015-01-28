@@ -105,4 +105,9 @@ public class Unigram
 	{
 		m_likelihoods = map;
 	}
+	
+	public boolean contains(String word)
+	{
+		return m_likelihoods.containsKey(word);
+	}
 }
