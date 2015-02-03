@@ -64,10 +64,4 @@ public class Sequence implements Comparable<Sequence>
 	{
 		return (int)Math.signum(getMaximumLikelihood() - o.getMaximumLikelihood()); 
 	}
-	
-	@Override
-	public String toString()
-	{
-		return l_words.toString()+" "+getMaximumLikelihood();
-	}
 }

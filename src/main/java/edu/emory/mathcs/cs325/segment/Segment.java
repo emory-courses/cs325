@@ -48,18 +48,18 @@ public class Segment extends AbstractSegment
 		}
 		
 		String word1 = sequence.getPreviousWord();
-		int i, len = s.length();
+		int endIndex, len = s.length();
 		double likelihood;
 		Sequence copy;
 		String word2;
 		
-		for (i=beginIndex+1; i<=len; i++)
+		for (endIndex=beginIndex+1; endIndex<=len; endIndex++)
 		{
-			word2 = s.substring(beginIndex, i);
+			word2 = s.substring(beginIndex, endIndex);
 			likelihood = l_model.getLikelihood(word1, word2);
 			copy = new Sequence(sequence);
 			copy.add(word2, likelihood);
-			segmentAux(list, s, i, copy);
+			segmentAux(list, s, endIndex, copy);
 		}
 	}
 }
