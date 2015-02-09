@@ -15,10 +15,78 @@
  */
 package edu.emory.mathcs.cs325.classifier;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import edu.emory.mathcs.cs325.ngrams.Bigram;
+import edu.emory.mathcs.cs325.ngrams.Unigram;
+import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NaiveBayes
+public class NaiveBayes extends AbstractClassifier
 {
+	private Map<String,Bigram> feature_likelihoods;
+	private Unigram            prior_likelihoods;
+	private double             d_epsilon;
+	
+	public NaiveBayes(double epsilon)
+	{
+		prior_likelihoods   = new Unigram(new NoSmoothing());
+		feature_likelihoods = new HashMap<>();
+		d_epsilon = epsilon;
+	}
+	
+	@Override
+	public void addInstance(String label, List<StringFeature> features)
+	{
+		prior_likelihoods.add(label, 1);
+		
+		for (StringFeature feature : features)
+			feature_likelihoods.computeIfAbsent(feature.getType(), key -> new Bigram(new NoSmoothing())).add(label, feature.getValue(), 1);
+	}
+	
+	@Override
+	public void train()
+	{
+		prior_likelihoods.estimateMaximumLikelihoods();
+		
+		for (Bigram m : feature_likelihoods.values())
+			m.estimateMaximumLikelihoods();
+	}
 
+	@Override
+	public List<Prediction> predict(List<StringFeature> features)
+	{
+		List<Prediction> predictions = getPriorList();
+		double score;
+		Bigram map;
+		
+		for (StringFeature feature : features)
+		{
+			map = feature_likelihoods.get(feature.getType());
+			
+			for (Prediction prediction : predictions)
+			{
+				score = map.contains(prediction.getLabel(), feature.getValue()) ? map.getLikelihood(prediction.getLabel(), feature.getValue()) : d_epsilon;
+				prediction.addScore(Math.log(score));
+			}
+		}
+		
+		return predictions;
+	}
+	
+	private List<Prediction> getPriorList()
+	{
+		List<Prediction> predictions = new ArrayList<>();
+		
+		for (Entry<String,Double> entry : prior_likelihoods.getLikelihoodMap().entrySet())
+			predictions.add(new Prediction(entry.getKey(), Math.log(entry.getValue())));
+		
+		return predictions;
+	}
 }

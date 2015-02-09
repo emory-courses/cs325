@@ -44,7 +44,7 @@ public class SegmentTest
 		IOUtils.readUnigrams(unigram, new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/1grams.txt"));
 		IOUtils.readBigrams (bigram , new FileInputStream("/Users/jdchoi/Emory/courses/CS325/dat/2grams.txt"));
 		
-		double unigramWeight = 0.01;
+		double unigramWeight = 0.5;
 		ILanguageModel model = new Backoff(unigram, bigram, unigramWeight);
 		AbstractSegment segment = new Segment(model);
 		
