@@ -34,6 +34,11 @@ public class NaiveBayes extends AbstractClassifier
 	private Unigram            prior_likelihoods;
 	private double             d_epsilon;
 	
+	/**
+	 * Initializes an unigram for the prior table.
+	 * Initializes a map of bigrams for the feature tables. 
+	 * @param epsilon the unseen probability.
+	 */
 	public NaiveBayes(double epsilon)
 	{
 		prior_likelihoods   = new Unigram(new NoSmoothing());
@@ -72,7 +77,8 @@ public class NaiveBayes extends AbstractClassifier
 			
 			for (Prediction prediction : predictions)
 			{
-				score = map.contains(prediction.getLabel(), feature.getValue()) ? map.getLikelihood(prediction.getLabel(), feature.getValue()) : d_epsilon;
+				score = map.getLikelihood(prediction.getLabel(), feature.getValue());
+				if (score == 0) score = d_epsilon;
 				prediction.addScore(Math.log(score));
 			}
 		}

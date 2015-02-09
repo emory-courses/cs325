@@ -28,11 +28,17 @@ public abstract class AbstractTagger
 {
 	protected AbstractClassifier classifier;
 	
+	/** @param classifier a multi-classifier. */
 	public AbstractTagger(AbstractClassifier classifier)
 	{
 		this.classifier = classifier;
 	}
 
+	/**
+	 * Adds training instances from a sentences.
+	 * @param words the words in the sentence.
+	 * @param tags the pos-tags in the sentence.
+	 */
 	public void addSentence(List<String> words, List<String> tags)
 	{
 		TagList list = new TagList(tags);
@@ -51,6 +57,12 @@ public abstract class AbstractTagger
 		classifier.train();
 	}
 	
+	/**
+	 * @return a list of string features from the current state.
+	 * @param words the list of words.
+	 * @param tags the list of previously found pos-tags.
+	 * @param index the current index.
+	 */
 	protected List<StringFeature> getFeatures(List<String> words, TagList tags, int index)
 	{
 		List<StringFeature> features = new ArrayList<>();
@@ -66,5 +78,9 @@ public abstract class AbstractTagger
 		return features;
 	}
 	
+	/**
+	 * @return the list of tags with the overall probability.
+	 * @param words the list of words.
+	 */
 	public abstract List<TagList> decode(List<String> words);
 }
