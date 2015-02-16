@@ -28,6 +28,8 @@ public abstract class AbstractTagger
 {
 	protected AbstractClassifier classifier;
 	
+	public AbstractTagger() {}
+	
 	/** @param classifier a multi-classifier. */
 	public AbstractTagger(AbstractClassifier classifier)
 	{

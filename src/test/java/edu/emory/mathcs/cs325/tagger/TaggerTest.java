@@ -33,18 +33,27 @@ public class TaggerTest
 		testTagger(new GreedyTagger    (new NaiveBayes(0.0001)));
 		testTagger(new ExhaustiveTagger(new NaiveBayes(0.0001)));
 		testTagger(new TopTagger       (new NaiveBayes(0.0001)));
+		testTagger(new HMMTagger       (0.0001));
 	}
 	
 	void testTagger(AbstractTagger tagger)
 	{
-		List<String> words    = DSUtils.createList("John","bought","a"  ,"book","from","Mary");
-		List<String> goldTags = DSUtils.createList("noun","verb"  ,"det","noun","prep","noun");
-		
+		List<String> words    = DSUtils.createList("John","is" ,"studying","with","Mary");
+		List<String> goldTags = DSUtils.createList("noun","aux","verb"    ,"prep","noun");
 		tagger.addSentence(words, goldTags);
+		
+		words    = DSUtils.createList("Mary","does","not","like","studying");
+		goldTags = DSUtils.createList("noun","aux" ,"adv","verb","noun");
+		tagger.addSentence(words, goldTags);
+		
+		words    = DSUtils.createList("Susan","is"   ,"also","like","Mary");
+		goldTags = DSUtils.createList("noun" ,"verb" ,"adv" ,"prep","noun");
+		tagger.addSentence(words, goldTags);
+		
 		tagger.train();
 		
-		words    = DSUtils.createList("Susan","made","a"  ,"cake","for" ,"Tom");
-		goldTags = DSUtils.createList("noun" ,"verb","det","noun","prep","noun");
+		words    = DSUtils.createList("John","did","not","like","playing","with","Tom");
+		goldTags = DSUtils.createList("noun","aux","adv","verb","verb"   ,"prep","noun");
 
 		for (TagList sysTags : tagger.decode(words))
 			printScore(goldTags, sysTags);
@@ -60,7 +69,7 @@ public class TaggerTest
 				correct++;
 		}
 		
-		System.out.println(sysTags.toString());
+//		System.out.println(sysTags.toString());
 		System.out.printf("%5.2f (%d/%d)\n", 100d*correct/total, correct, total);
 	}
 }
