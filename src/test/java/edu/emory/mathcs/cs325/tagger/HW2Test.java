@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.cs325.classifier.NaiveBayes;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -35,8 +33,8 @@ public class HW2Test
 	@Test
 	public void test()
 	{
-		AbstractTagger tagger = new ExhaustiveTagger(new NaiveBayes(0.0001));
-//		AbstractTagger tagger = new HMMTagger(0.0001);
+//		AbstractTagger tagger = new TopTagger(new NaiveBayes(0.0001));
+		AbstractTagger tagger = new HMMTagger(0.0001);
 		
 		try
 		{

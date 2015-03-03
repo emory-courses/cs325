@@ -13,31 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.tagger;
-
-import java.util.List;
-
-import edu.emory.mathcs.cs325.classifier.AbstractClassifier;
-import edu.emory.mathcs.cs325.classifier.Prediction;
-import edu.emory.mathcs.cs325.classifier.StringFeature;
-import edu.emory.mathcs.cs325.utils.DSUtils;
+package edu.emory.mathcs.cs325.classifier;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class TopKTagger extends ExhaustiveTagger
+public class DecisionTree
 {
-	final int k;
 	
-	public TopKTagger(AbstractClassifier classifier, int k)
-	{
-		super(classifier);
-		this.k = k;
-	}
-
-	@Override
-	protected List<Prediction> getPredictions(List<StringFeature> features)
-	{
-		return DSUtils.getTopKList(classifier.predict(features), k);
-	}
 }

@@ -18,6 +18,7 @@ package edu.emory.mathcs.cs325.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import edu.emory.mathcs.cs325.classifier.StringFeature;
 
@@ -46,6 +47,24 @@ public class DSUtils
 		}
 		
 		return best;
+	}
+	
+	static public <T extends Comparable<T>>List<T> getTopKList(List<T> list, int k)
+	{
+		List<T> topk = new ArrayList<>();
+		PriorityQueue<T> pq = new PriorityQueue<>(Collections.reverseOrder());
+		pq.addAll(list);
+		
+		for (int i=0; !pq.isEmpty() && i<k; i++)
+			topk.add(pq.remove());
+		
+		
+		List<T> copy = new ArrayList<>(list);
+		Collections.sort(copy, Collections.reverseOrder());
+		if (list.size() < k) k = list.size();
+		copy.subList(0, k);
+		
+		return topk;
 	}
 	
 	static public List<StringFeature> createFeatureVector(String... typeValue)

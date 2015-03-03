@@ -33,6 +33,7 @@ public class TaggerTest
 		testTagger(new GreedyTagger    (new NaiveBayes(0.0001)));
 		testTagger(new ExhaustiveTagger(new NaiveBayes(0.0001)));
 		testTagger(new TopTagger       (new NaiveBayes(0.0001)));
+		testTagger(new TopKTagger      (new NaiveBayes(0.0001), 3));
 		testTagger(new HMMTagger       (0.0001));
 	}
 	
