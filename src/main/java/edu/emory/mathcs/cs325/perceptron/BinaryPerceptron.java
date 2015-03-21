@@ -13,40 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.classifier;
+package edu.emory.mathcs.cs325.perceptron;
 
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class StringFeature
+public class BinaryPerceptron extends AbstractPerceptron
 {
-	private String type;
-	private String value;
+	public BinaryPerceptron(double alpha, int featureSize)
+	{
+		super(alpha);
+		weight_vector = new double[featureSize];
+	}
+
+	@Override
+	public void train(int[] x, int y)
+	{
+		double delta = alpha * (y - decode(x));
+		update(x, delta);
+	}
 	
-	public StringFeature(String type, String value)
+	@Override
+	public int decode(int[] x)
 	{
-		setType(type);
-		setValue(value);
+		return I(yhat(x));
 	}
-
-	public String getType()
+	
+	double yhat(int[] x)
 	{
-		return type;
+		double sum = 0;
+		
+		for (int xj : x)
+			sum += weight_vector[xj];
+		
+		return sum;
 	}
-
-	public void setType(String type)
+	
+	int I(double y)
 	{
-		this.type = type;
+		return (y >= 0) ? 1 : -1;
 	}
-
-	public String getValue()
+	
+	void update(int[] x, double delta)
 	{
-		return value;
-	}
-
-	public void setValue(String value)
-	{
-		this.value = value;
+		for (int xj : x)
+			weight_vector[xj] *= delta;
 	}
 }

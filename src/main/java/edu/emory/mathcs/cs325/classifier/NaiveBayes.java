@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.emory.mathcs.cs325.feature.StringFeature;
 import edu.emory.mathcs.cs325.ngrams.Bigram;
 import edu.emory.mathcs.cs325.ngrams.Unigram;
 import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;

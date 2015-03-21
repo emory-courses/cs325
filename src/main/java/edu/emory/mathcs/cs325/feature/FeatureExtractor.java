@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.emory.mathcs.cs325.classifier.StringFeature;
 import edu.emory.mathcs.cs325.tagger.TagList;
 
 /**

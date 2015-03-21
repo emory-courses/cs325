@@ -13,31 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.tagger;
-
-import java.util.List;
-
-import edu.emory.mathcs.cs325.classifier.AbstractClassifier;
-import edu.emory.mathcs.cs325.classifier.Prediction;
-import edu.emory.mathcs.cs325.feature.StringFeature;
-import edu.emory.mathcs.cs325.utils.DSUtils;
+package edu.emory.mathcs.cs325.perceptron;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class TopKTagger extends ExhaustiveTagger
+public abstract class AbstractPerceptron
 {
-	final int k;
+	protected double[] weight_vector;
+	protected double alpha;
 	
-	public TopKTagger(AbstractClassifier classifier, int k)
+	public AbstractPerceptron(double alpha)
 	{
-		super(classifier);
-		this.k = k;
+		this.alpha = alpha;
 	}
-
-	@Override
-	protected List<Prediction> getPredictions(List<StringFeature> features)
-	{
-		return DSUtils.getTopKList(classifier.predict(features), k);
-	}
+	
+	/**
+	 * @param x feature indices.
+	 * @param y true class label.
+	 */
+	public abstract void train (int[] x, int y);
+	
+	/**
+	 * @param x feature indices.
+	 * @return the best predicted class label.
+	 */
+	public abstract int decode(int[] x);
 }

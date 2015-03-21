@@ -20,7 +20,7 @@ import java.util.List;
 
 import edu.emory.mathcs.cs325.classifier.AbstractClassifier;
 import edu.emory.mathcs.cs325.classifier.Prediction;
-import edu.emory.mathcs.cs325.classifier.StringFeature;
+import edu.emory.mathcs.cs325.feature.StringFeature;
 import edu.emory.mathcs.cs325.utils.DSUtils;
 
 /**

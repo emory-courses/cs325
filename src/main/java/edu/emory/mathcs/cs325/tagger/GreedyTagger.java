@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.emory.mathcs.cs325.classifier.AbstractClassifier;
-import edu.emory.mathcs.cs325.classifier.StringFeature;
+import edu.emory.mathcs.cs325.feature.StringFeature;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

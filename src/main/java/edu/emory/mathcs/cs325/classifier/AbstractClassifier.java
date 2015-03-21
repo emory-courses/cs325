@@ -17,6 +17,8 @@ package edu.emory.mathcs.cs325.classifier;
 
 import java.util.List;
 
+import edu.emory.mathcs.cs325.feature.StringFeature;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
