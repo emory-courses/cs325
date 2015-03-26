@@ -18,39 +18,48 @@ package edu.emory.mathcs.cs325.utils;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class IntDoublePair
+public class IntDoublePair implements Comparable<IntDoublePair>
 {
-	private int o1;
-	private double o2;
+	private int i;
+	private double d;
 	
-	public IntDoublePair(int o1, double p2)
+	public IntDoublePair(int i, double d)
 	{
-		set(o1, o2);
+		set(i, d);
 	}
 
 	public int getInt()
 	{
-		return o1;
+		return i;
 	}
 	
 	public double getDouble()
 	{
-		return o2;
+		return d;
 	}
 	
-	public void set(int o1, double o2)
+	public void set(int i, double d)
 	{
-		setInt (o1);
-		setDouble(o2);
+		setInt(i);
+		setDouble(d);
 	}
 	
-	public void setInt(int o)
+	public void setInt(int i)
 	{
-		o1 = o;
+		this.i = i;
 	}
 	
-	public void setDouble(double o)
+	public void setDouble(double d)
 	{
-		o2 = o;
+		this.d = d;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(IntDoublePair o)
+	{
+		return (int)Math.signum(d - o.d);
 	}
 }

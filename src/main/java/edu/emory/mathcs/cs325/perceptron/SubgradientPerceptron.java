@@ -15,25 +15,22 @@
  */
 package edu.emory.mathcs.cs325.perceptron;
 
-import edu.emory.mathcs.cs325.utils.IntDoublePair;
+
 
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class BinaryPerceptron extends AbstractPerceptron
+public class SubgradientPerceptron extends AbstractMultiPerceptron
 {
-	public BinaryPerceptron(double alpha, int featureSize)
+	public SubgradientPerceptron(double alpha, int featureSize, int labelSize)
 	{
-		super(alpha);
-		weight_vector = new double[featureSize];
+		super(alpha, featureSize, labelSize);
 	}
 	
-	public BinaryPerceptron(double alpha, int featureSize, boolean average)
+	public SubgradientPerceptron(double alpha, int featureSize, int labelSize, boolean average)
 	{
-		super(alpha);
-		weight_vector = new double[featureSize];
-		if (average) average_vector = new double[featureSize];
+		super(alpha, featureSize, labelSize, average);
 	}
 
 	@Override
@@ -43,8 +40,9 @@ public class BinaryPerceptron extends AbstractPerceptron
 		
 		if (y != argmax)
 		{
-			double delta = alpha * y;
-			update(x, delta);
+			double delta = alpha;
+			update(x, y, delta);
+			update(x, argmax, -delta);
 		}
 		
 		return argmax;
@@ -57,39 +55,11 @@ public class BinaryPerceptron extends AbstractPerceptron
 		
 		if (y != argmax)
 		{
-			double delta = alpha * y * s;
-			updateAverage(x, delta);
+			double delta = alpha * s;
+			updateAverage(x, y, delta);
+			updateAverage(x, argmax, -delta);
 		}
 		
 		return argmax;
-	}
-	
-	@Override
-	public IntDoublePair decode(int[] x)
-	{
-		double d = yhat(x);
-		return new IntDoublePair(I(d), Math.abs(d));
-	}
-	
-	private double yhat(int[] x)
-	{
-		double d = 0;
-		
-		for (int j : x)
-			d += weight_vector[j];
-		
-		return d;
-	}
-	
-	private void update(int[] x, double delta)
-	{
-		for (int j : x)
-			weight_vector[j] += delta;
-	}
-	
-	private void updateAverage(int[] x, double delta)
-	{
-		for (int j : x)
-			average_vector[j] += delta;
-	}
+	}	
 }

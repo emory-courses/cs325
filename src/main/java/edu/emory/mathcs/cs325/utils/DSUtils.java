@@ -77,4 +77,17 @@ public class DSUtils
 		
 		return features;
 	}
+	
+	static public <T extends Comparable<T>>int maxIndex(T[] array)
+	{
+		int i, max = 0;
+		
+		for (i=1; i<array.length; i++)
+		{
+			if (array[max].compareTo(array[i]) < 0)
+				max = i;
+		}
+		
+		return max;
+	}
 }

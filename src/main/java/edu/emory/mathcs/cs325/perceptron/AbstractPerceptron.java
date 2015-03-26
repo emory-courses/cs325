@@ -15,13 +15,18 @@
  */
 package edu.emory.mathcs.cs325.perceptron;
 
+import java.util.List;
+
+import edu.emory.mathcs.cs325.utils.IntDoublePair;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class AbstractPerceptron
 {
+	protected double[] average_vector;
 	protected double[] weight_vector;
-	protected double alpha;
+	protected double   alpha;
 	
 	public AbstractPerceptron(double alpha)
 	{
@@ -29,14 +34,44 @@ public abstract class AbstractPerceptron
 	}
 	
 	/**
+	 * @return the predicated label.
 	 * @param x feature indices.
 	 * @param y true class label.
 	 */
-	public abstract void train (int[] x, int y);
+	public abstract int train(int[] x, int y);
+	
+	/**
+	 * @return the predicated label.
+	 * @param x feature indices.
+	 * @param y true class label.
+	 * @param s averaging step.
+	 */
+	public abstract int train(int[] x, int y, int s);
 	
 	/**
 	 * @param x feature indices.
-	 * @return the best predicted class label.
+	 * @return the best predicted label and score.
 	 */
-	public abstract int decode(int[] x);
+	public abstract IntDoublePair decode(int[] x);
+	
+	protected int I(double y)
+	{
+		return (y >= 0) ? 1 : -1;
+	}
+	
+	public void train(final int M, List<int[]> xs, List<Integer> ys)
+	{
+		boolean average = average_vector != null;
+		final int T = xs.size();
+		int m, t, s = M * T;
+		
+		for (m=0; m<M; m++)
+			for (t=0; t<T; t++)
+			{
+				if (average) train(xs.get(t), ys.get(t));
+				else		 train(xs.get(t), ys.get(t), s--);
+			}
+		
+		System.arraycopy(average_vector, 0, weight_vector, 0, weight_vector.length);
+	}
 }
