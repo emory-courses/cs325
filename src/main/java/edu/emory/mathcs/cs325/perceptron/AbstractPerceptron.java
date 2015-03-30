@@ -15,9 +15,12 @@
  */
 package edu.emory.mathcs.cs325.perceptron;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import edu.emory.mathcs.cs325.utils.IntDoublePair;
+import edu.emory.mathcs.cs325.utils.ObjectIntPair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -27,10 +30,12 @@ public abstract class AbstractPerceptron
 	protected double[] average_vector;
 	protected double[] weight_vector;
 	protected double   alpha;
+	protected Random   random;
 	
 	public AbstractPerceptron(double alpha)
 	{
 		this.alpha = alpha;
+		random = new Random(5);
 	}
 	
 	/**
@@ -59,18 +64,24 @@ public abstract class AbstractPerceptron
 		return (y >= 0) ? 1 : -1;
 	}
 	
-	public void train(final int M, List<int[]> xs, List<Integer> ys)
+	public void train(final int M, List<ObjectIntPair<int[]>> instances)
 	{
 		boolean average = average_vector != null;
-		final int T = xs.size();
+		final int T = instances.size();
+		ObjectIntPair<int[]> instance;
 		int m, t, s = M * T;
 		
 		for (m=0; m<M; m++)
+		{
+			Collections.shuffle(instances, random);
+			
 			for (t=0; t<T; t++)
 			{
-				if (average) train(xs.get(t), ys.get(t));
-				else		 train(xs.get(t), ys.get(t), s--);
+				instance = instances.get(t);
+				if (average) train(instance.getObject(), instance.getInt());
+				else		 train(instance.getObject(), instance.getInt(), s--);
 			}
+		}
 		
 		System.arraycopy(average_vector, 0, weight_vector, 0, weight_vector.length);
 	}
