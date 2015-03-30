@@ -82,7 +82,8 @@ public abstract class AbstractPerceptron
 				else		 train(instance.getObject(), instance.getInt(), s--);
 			}
 		}
-		
-		System.arraycopy(average_vector, 0, weight_vector, 0, weight_vector.length);
+
+		if (average)
+			System.arraycopy(average_vector, 0, weight_vector, 0, weight_vector.length);
 	}
 }

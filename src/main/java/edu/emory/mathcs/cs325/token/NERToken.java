@@ -13,30 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.cs325.feature;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.emory.mathcs.cs325.token.NERToken;
+package edu.emory.mathcs.cs325.token;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SimpleFeatureExtractor extends AbstractFeatureExtractor<NERToken>
+public class NERToken extends AbstractToken
 {
-	@Override
-	public List<StringFeature> getStringFeatures(List<NERToken> tokens, int index)
+	private String word;
+	private String posTag;
+	private String chunkTag;
+	
+	public NERToken(String label, String word, String posTag, String chunkTag)
 	{
-		List<StringFeature> features = new ArrayList<>();
-
-		// current word form
-		features.add(new StringFeature("f0", tokens.get(index).getWord()));
-		
-		// previous label
-		if (index-1 >= 0)
-			features.add(new StringFeature("f1", tokens.get(index-1).getLabel()));
-		
-		return features;
+		super(label);
+		setWord(word);
+		setPOSTag(posTag);
+		setChunkTag(chunkTag);
+	}
+	
+	public String getWord()
+	{
+		return word;
+	}
+	
+	public void setWord(String word)
+	{
+		this.word = word;
+	}
+	
+	public String getPOSTag()
+	{
+		return posTag;
+	}
+	
+	public void setPOSTag(String posTag)
+	{
+		this.posTag = posTag;
+	}
+	
+	public String getChunkTag()
+	{
+		return chunkTag;
+	}
+	
+	public void setChunkTag(String chunkTag)
+	{
+		this.chunkTag = chunkTag;
 	}
 }
