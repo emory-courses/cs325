@@ -25,15 +25,14 @@ public class Term implements Comparable<Term>
 	private int document_frequency;
 	private double score;
 	
-	public Term(int id)
-	{
-		setID(id);
-	}
+	public Term() {}
 	
 	public Term(int id, int termFrequency)
 	{
 		setID(id);
 		setTermFrequency(termFrequency);
+		setDocumentFrequency(0);
+		setScore(1);
 	}
 	
 	public Term(int id, int termFrequency, int documentFrequency)
