@@ -23,7 +23,7 @@ public class Term implements Comparable<Term>
 	private int id;
 	private int term_frequency;
 	private int document_frequency;
-	private double tf_idf;
+	private double score;
 	
 	public Term(int id)
 	{
@@ -73,14 +73,14 @@ public class Term implements Comparable<Term>
 		this.document_frequency = frequency;
 	}
 	
-	public double getTFIDF()
+	public double getScore()
 	{
-		return tf_idf;
+		return score;
 	}
 	
-	public void setTFIDF(double score)
+	public void setScore(double score)
 	{
-		tf_idf = score; 
+		this.score = score; 
 	}
 	
 	@Override
