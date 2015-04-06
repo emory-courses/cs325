@@ -28,7 +28,7 @@ import edu.emory.clir.clearnlp.util.Splitter;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class StopWordGenerator
+public class StopWordsGenerator
 {
 	static public void main(String[] args) throws Exception
 	{
