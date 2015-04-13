@@ -18,7 +18,9 @@ package edu.emory.mathcs.cs325.document;
 import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
 import edu.emory.clir.clearnlp.util.FileUtils;
@@ -34,7 +36,7 @@ public class StopWordsGenerator
 	{
 		final String inputDir = "/Users/jdchoi/Desktop/genre-pos/train";
 		final String inputExt = ".txt";
-		final int cutoff = 50;
+		final int cutoff = 100;
 		
 		VectorSpaceModel model = new VectorSpaceModel();
 		BufferedReader reader;
@@ -51,7 +53,12 @@ public class StopWordsGenerator
 		List<ObjectIntPair<String>> dfs = model.getDocumentFrequencies();
 		Collections.sort(dfs, Collections.reverseOrder());
 		
+		Set<String> stopWords = new HashSet<>();
+		
 		for (int i=0; i<cutoff; i++)
+		{
+			stopWords.add(dfs.get(i).o);
 			System.out.println(dfs.get(i).o+" "+dfs.get(i).i);
+		}
 	}
 }

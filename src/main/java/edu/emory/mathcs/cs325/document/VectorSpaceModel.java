@@ -18,7 +18,10 @@ package edu.emory.mathcs.cs325.document;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
 import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
@@ -33,13 +36,25 @@ public class VectorSpaceModel implements Serializable
 	private static final long serialVersionUID = 4172483442205081702L;
 	private List<ObjectIntPair<String>> term_list;
 	private ObjectIntHashMap<String> term_id_map;
+	private Set<String> stop_words;
 	private int id_count;
 
 	public VectorSpaceModel()
 	{
 		term_id_map = new ObjectIntHashMap<>();
 		term_list   = new ArrayList<>();
+		stop_words  = new HashSet<>();
 		id_count    = 0;
+	}
+	
+	public void addStopWord(String stopWord)
+	{
+		stop_words.add(stopWord);
+	}
+	
+	public void addStopWords(Set<String> stopWords)
+	{
+		stop_words.addAll(stopWords);
 	}
 	
 	/**
@@ -47,9 +62,9 @@ public class VectorSpaceModel implements Serializable
 	 */
 	public Term[] toBagOfWords(List<String> document, boolean df)
 	{
-		// To be filled.
 		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
-		for (String term : document) map.add(term);
+		for (String term : document) if (!stop_words.contains(term)) map.add(term);
+		
 		Term[] terms = new Term[map.size()];
 		int id, i = 0;
 		
@@ -188,5 +203,25 @@ public class VectorSpaceModel implements Serializable
 		for (; j<len2; j++) den2 += MathUtils.sq(d2[j].getScore());
 		
 		return num / (Math.sqrt(den1) * Math.sqrt(den2));
+	}
+	
+	static public Set<String> generateStopWords(List<List<String>> documents, int cutoff)
+	{
+		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
+		Set<String> set;
+		
+		for (List<String> document : documents)
+		{
+			set = new HashSet<>(document);
+			for (String term : set) map.add(term);
+		}
+		
+		List<ObjectIntPair<String>> list = map.toList();
+		Collections.sort(list, Collections.reverseOrder());
+		int i, len = list.size();
+		set = new HashSet<>();
+		
+		for (i=0; i<len; i++) set.add(list.get(i).o);
+		return set;
 	}
 }
