@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.la4j.Matrix;
 import org.la4j.Vector;
+import org.la4j.decomposition.SingularValueDecompositor;
 import org.la4j.matrix.dense.Basic2DMatrix;
 
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
@@ -33,6 +34,7 @@ import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 import edu.emory.mathcs.cs325.document.Term;
 import edu.emory.mathcs.cs325.document.VectorSpaceModel;
+import edu.emory.mathcs.cs325.utils.IntDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -40,51 +42,77 @@ import edu.emory.mathcs.cs325.document.VectorSpaceModel;
 public class LatentSemanticAnalysis
 {
 	private VectorSpaceModel vs_model;
+	private Matrix td_matrix;
 	
-	public Matrix getTermDocumentMatrix(List<List<String>> documents)
+	public LatentSemanticAnalysis(List<List<String>> documents, int k)
 	{
 		vs_model = new VectorSpaceModel();
 		List<Term[]> list = vs_model.toTFIDFs(documents);
-		int i, T = vs_model.getTermSize(), D = list.size();
-		Matrix matrix = new Basic2DMatrix(T, D);
+		int T = vs_model.getTermSize(), D = list.size();
+		td_matrix = new Basic2DMatrix(T, D);
 		
-		for (i=0; i<D; i++)
-			for (Term term : list.get(i))
-				matrix.set(term.getID(), i, term.getScore());
-
-		return matrix;
+		for (int docID=0; docID<D; docID++)
+			for (Term term : list.get(docID))
+				td_matrix.set(term.getID(), docID, term.getScore());
+		
+		toLSA(k);
 	}
 	
-	public List<ObjectDoublePair<String>> getTopSimilarTerms(Matrix matrix, String term, int k)
+	private void toLSA(int k)
 	{
-		List<ObjectDoublePair<String>> list = new ArrayList<>();
-		int termID = vs_model.getID(term);
-		if (termID < 0) return list;
-		int i, size = matrix.rows();
+		SingularValueDecompositor d = new SingularValueDecompositor(td_matrix);
+		Matrix[] usv = d.decompose();
 		
-		for (i=0; i<size; i++)
+		int[] top = getTopDiagonals(usv[1], k);		
+		Matrix  u = new Basic2DMatrix(usv[0].rows(), k);
+		Matrix  s = new Basic2DMatrix(k, k);
+		Matrix  v = new Basic2DMatrix(usv[2].rows(), k);
+		
+		for (int i=0; i<k; i++)
 		{
-			if (i != termID)
-				list.add(new ObjectDoublePair<String>(vs_model.getTerm(i), getCosineSimilarityTerm(matrix, termID, i)));
+			u.setColumn(i, usv[0].getColumn(top[i]));
+			s.setColumn(i, usv[1].getColumn(top[i]));
+			v.setColumn(i, usv[2].getColumn(top[i]));
 		}
+
+		td_matrix = u.multiply(s).multiply(v.transpose());
+	}
+	
+	private int[] getTopDiagonals(Matrix m, int k)
+	{
+		List<IntDoublePair> list = new ArrayList<>();
+		
+		for (int i=m.rows()-1; i>=0; i--)
+			list.add(new IntDoublePair(i, m.get(i, i)));
 		
 		Collections.sort(list, Collections.reverseOrder());
-		return (k > list.size()) ? list : list.subList(0, k);
+		int[] indices = new int[k];
+		
+		for (int i=0; i<k; i++)
+			indices[i] = list.get(i).getInt();
+		
+		return indices;
 	}
 	
-	public double getCosineSimilarityTerm(Matrix matrix, int i, int j)
+	public List<ObjectDoublePair<String>> getTopSimilarTerms(String term, int k)
 	{
-		return getCosineSimilarity(matrix.getRow(i), matrix.getRow(j));
+		// To be filled.
+		return null;
 	}
 	
-	public double getCosineSimilarityDocument(Matrix matrix, int i, int j)
+	public double getCosineSimilarityTerm(int i, int j)
 	{
-		return getCosineSimilarity(matrix.getColumn(i), matrix.getColumn(j));
+		return getCosineSimilarity(td_matrix.getRow(i), td_matrix.getRow(j));
+	}
+	
+	public double getCosineSimilarityDocument(int i, int j)
+	{
+		return getCosineSimilarity(td_matrix.getColumn(i), td_matrix.getColumn(j));
 	}
 	
 	public double getCosineSimilarity(Vector v1, Vector v2)
 	{
-		return v1.innerProduct(v2) / Math.sqrt(v1.norm()*v2.norm());
+		return v1.innerProduct(v2) / Math.sqrt(v1.norm() * v2.norm());
 	}
 	
 	static public void main(String[] args) throws Exception
@@ -100,8 +128,7 @@ public class LatentSemanticAnalysis
 			documents.add(tokenizer.tokenize(new FileInputStream(filename)));
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		LatentSemanticAnalysis lsa = new LatentSemanticAnalysis();
-		Matrix matrix = lsa.getTermDocumentMatrix(documents);
+		LatentSemanticAnalysis lsa = new LatentSemanticAnalysis(documents, 1000);
 		String line;
 		int k = 10;
 		
@@ -109,7 +136,7 @@ public class LatentSemanticAnalysis
 		{
 			System.out.print("Enter a term: "); line = reader.readLine();
 			
-			for (ObjectDoublePair<String> p : lsa.getTopSimilarTerms(matrix, line.trim(), k))
+			for (ObjectDoublePair<String> p : lsa.getTopSimilarTerms(line.trim(), k))
 				System.out.printf("%20s: %5.4f\n", p.o, p.d);
 		}
 	}
