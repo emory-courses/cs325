@@ -20,70 +20,57 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.emory.clir.clearnlp.collection.list.IntArrayList;
 import edu.emory.clir.clearnlp.collection.map.IntObjectHashMap;
-import edu.emory.clir.clearnlp.collection.map.ObjectIntHashMap;
-import edu.emory.clir.clearnlp.collection.pair.ObjectIntPair;
+import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
 import edu.emory.clir.clearnlp.util.FileUtils;
-import edu.emory.clir.clearnlp.util.MathUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DocumentClustering
+public class StudentSimilarity
 {
 	static public void main(String[] args) throws Exception
 	{
-		final String inputDir = "/Users/jdchoi/Emory/courses/CS325/dat/clustering/train";
+		final String inputDir = "/Users/jdchoi/Emory/courses/CS325/dat/clustering/students";
 		final String inputExt = ".txt";
-		final int K = 7;
 		
 		AbstractTokenizer tokenizer = NLPUtils.getTokenizer(TLanguage.ENGLISH);
-		IntObjectHashMap<String> genreMap = new IntObjectHashMap<>();
+		IntObjectHashMap<String> map = new IntObjectHashMap<>();
 		List<List<String>> documents = new ArrayList<>();
 		VectorSpaceModel model = new VectorSpaceModel();
-		AbstractKmeans kmeans = new KmeanCosine();
 		List<String> document;
-		String genre;
-		int idx;
+		String basename;
 		
 		List<String> filenames = FileUtils.getFileList(inputDir, inputExt, true);
 		Collections.sort(filenames);
 		
 		for (String filename : filenames)
 		{
-			idx = inputDir.length() + 1;
-			genre = filename.substring(idx, idx+2);
+			basename = FileUtils.getBaseName(filename);
 			document = tokenizer.tokenize(new FileInputStream(filename));
-			genreMap.put(documents.size(), genre);
+			map.put(documents.size(), basename.substring(0, basename.length()-4));
 			documents.add(document);
 		}
 		
 		List<Term[]> tfidfs = model.toTFIDFs(documents);
-		List<IntArrayList> clusters = kmeans.clusterRandom(tfidfs, K, 0.0001);
-		System.out.println("Score: "+getPurityScrore(genreMap, clusters));
-	}
-	
-	static public double getPurityScrore(IntObjectHashMap<String> genreMap, List<IntArrayList> clusters)
-	{
-		int purityCount = clusters.stream().mapToInt(cluster -> getPurityCount(genreMap, cluster)).sum();
-		int totalCount  = clusters.stream().mapToInt(cluster -> cluster.size()).sum();
-		return MathUtils.divide(purityCount, totalCount);
-	}
-	
-	static public int getPurityCount(IntObjectHashMap<String> genreMap, IntArrayList cluster)
-	{
-		ObjectIntHashMap<String> map = new ObjectIntHashMap<>();
-		int i, size = cluster.size();
+		List<ObjectDoublePair<String>> list;
+		int i, j, size = tfidfs.size();
 		
 		for (i=0; i<size; i++)
-			map.add(genreMap.get(cluster.get(i)));
-
-		ObjectIntPair<String> p = Collections.max(map.toList());
-		System.out.printf("%s: %5.2f (%d/%d)\n", p.o, MathUtils.getAccuracy(p.i, size), p.i, size);
-		return p.i;
+		{
+			list = new ArrayList<>();
+			
+			for (j=0; j<size; j++)
+				if (i != j)
+					list.add(new ObjectDoublePair<>(map.get(j), VectorSpaceModel.getCosineSimilarity(tfidfs.get(i), tfidfs.get(j))));
+			
+			Collections.sort(list, Collections.reverseOrder());
+			
+			System.out.println(map.get(i));
+			for (ObjectDoublePair<String> p : list) System.out.printf("%10s: %f\n", p.o, p.d);
+		}
 	}
 }

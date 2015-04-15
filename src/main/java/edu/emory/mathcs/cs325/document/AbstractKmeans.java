@@ -31,11 +31,32 @@ import edu.emory.clir.clearnlp.util.MathUtils;
  */
 public abstract class AbstractKmeans
 {
-	public List<IntArrayList> cluster(List<Term[]> documents, final int K, final double threshold)
+	public List<IntArrayList> clusterForge(List<Term[]> documents, final int K, final double threshold)
 	{
 		final int T = maxID(documents) + 1;
 		double[][] prevCentroids, currCentroids = initCentroids(documents, K, T);
 		List<IntArrayList> clusters;
+		double distance;
+		int iter = 1;
+		
+		do
+		{
+			clusters = maximize(documents, currCentroids, K);
+			prevCentroids = currCentroids;
+			currCentroids = estimate(documents, clusters, K, T);
+			distance = averageDistance(prevCentroids, currCentroids, K);
+			System.out.printf("%4d: %5.4f [%s]\n", iter, distance, Joiner.join(clusters.stream().map(cluster -> cluster.size()).collect(Collectors.toList()), ","));
+		}
+		while (distance > threshold);
+		
+		return clusters;
+	}
+	
+	public List<IntArrayList> clusterRandom(List<Term[]> documents, final int K, final double threshold)
+	{
+		final int T = maxID(documents) + 1;
+		List<IntArrayList> clusters = initClusters(K, documents.size());
+		double[][] prevCentroids, currCentroids = estimate(documents, clusters, K, T);
 		double distance;
 		int iter = 1;
 		
@@ -87,6 +108,17 @@ public abstract class AbstractKmeans
 		}
 		
 		return centroids;
+	}
+	
+	private List<IntArrayList> initClusters(final int K, final int D)
+	{
+		List<IntArrayList> clusters = IntStream.range(0, K).mapToObj(i -> new IntArrayList()).collect(Collectors.toList());
+		Random rand = new Random(1);
+		
+		for (int i=0; i<D; i++)
+			clusters.get(rand.nextInt(K)).add(i);
+		
+		return clusters;
 	}
 	
 	private double[] computeCentroids(List<Term[]> documents, IntArrayList cluster, final int T)

@@ -25,6 +25,7 @@ import edu.emory.mathcs.cs325.feature.AbstractFeatureExtractor;
 import edu.emory.mathcs.cs325.perceptron.AbstractPerceptron;
 import edu.emory.mathcs.cs325.perceptron.SubgradientPerceptron;
 import edu.emory.mathcs.cs325.token.NERToken;
+import edu.emory.mathcs.cs325.utils.IntDoublePair;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -57,19 +58,24 @@ public class SimpleNERecognizer extends AbstractNERecognizer
 		final String TRN_FILE = "/Users/jdchoi/Emory/courses/CS325/dat/eng.trn";
 		final String DEV_FILE = "/Users/jdchoi/Emory/courses/CS325/dat/eng.dev";
 		final double ALPHA = 0.01;
-		final int MAX_ITER = 10;
+		final int MAX_ITER = 100;
 		
 		SimpleNERecognizer ner = new SimpleNERecognizer();
 		
 		AbstractFeatureExtractor<NERToken> ex = ner.collect(new FileInputStream(TRN_FILE));
 		AbstractPerceptron perceptron = new SubgradientPerceptron(ALPHA, ex.getFeatureSize(), ex.getLabelSize());
+		IntDoublePair max = new IntDoublePair(0, 0);
 		double score;
+		
 
 		for (int i=0; i<MAX_ITER; i++)
 		{
 			ner.train(ex, perceptron, new FileInputStream(TRN_FILE));
 			score = ner.evaluate(ex, perceptron, new FileInputStream(DEV_FILE));
+			if (score > max.getDouble()) max.set(i, score);
 			System.out.printf("%3d: %5.2f\n", i, score);
 		}
+		
+		System.out.println("Best: "+max.getInt()+" "+max.getDouble());
 	}
 }

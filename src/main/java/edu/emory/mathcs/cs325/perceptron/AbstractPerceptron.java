@@ -78,8 +78,8 @@ public abstract class AbstractPerceptron
 			for (t=0; t<T; t++)
 			{
 				instance = instances.get(t);
-				if (average) train(instance.getObject(), instance.getInt());
-				else		 train(instance.getObject(), instance.getInt(), s--);
+				if (!average) train(instance.getObject(), instance.getInt());
+				else		  train(instance.getObject(), instance.getInt(), s--);
 			}
 		}
 

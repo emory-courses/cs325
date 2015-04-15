@@ -120,6 +120,11 @@ public class VectorSpaceModel implements Serializable
 		return term_id_map.get(term) - 1;
 	}
 	
+	public int getTermSize()
+	{
+		return id_count;
+	}
+	
 	public int getDocumentFrequency(int id)
 	{
 		return DSUtils.isRange(term_list, id) ? term_list.get(id).i : 0; 

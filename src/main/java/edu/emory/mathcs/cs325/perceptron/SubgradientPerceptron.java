@@ -36,7 +36,10 @@ public class SubgradientPerceptron extends AbstractMultiPerceptron
 	@Override
 	public int train(int[] x, int y)
 	{
-		int argmax = decode(x).getInt();
+		double[] yhats = yhats(x);
+		yhats[y] -= 1;
+		int argmax = getBest(yhats).getInt();
+//		int argmax = decode(x).getInt();
 		
 		if (y != argmax)
 		{
