@@ -131,7 +131,7 @@ public abstract class AbstractKmeans
 				centroid[term.getID()] += term.getScore();
 		
 		for (i=0; i<T; i++)
-			centroid[i] /= D;
+			centroid[i] /= C;
 		
 		return centroid;
 	}

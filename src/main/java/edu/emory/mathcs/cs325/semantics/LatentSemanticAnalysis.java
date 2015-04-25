@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.la4j.Matrix;
 import org.la4j.Vector;
@@ -30,6 +31,7 @@ import org.la4j.matrix.dense.Basic2DMatrix;
 import edu.emory.clir.clearnlp.collection.pair.ObjectDoublePair;
 import edu.emory.clir.clearnlp.component.utils.NLPUtils;
 import edu.emory.clir.clearnlp.tokenization.AbstractTokenizer;
+import edu.emory.clir.clearnlp.util.DSUtils;
 import edu.emory.clir.clearnlp.util.FileUtils;
 import edu.emory.clir.clearnlp.util.lang.TLanguage;
 import edu.emory.mathcs.cs325.document.Term;
@@ -44,10 +46,12 @@ public class LatentSemanticAnalysis
 	private VectorSpaceModel vs_model;
 	private Matrix td_matrix;
 	
-	public LatentSemanticAnalysis(List<List<String>> documents, int k)
+	public LatentSemanticAnalysis(List<List<String>> documents, int k) throws Exception
 	{
 		vs_model = new VectorSpaceModel();
+		vs_model.addStopWords(DSUtils.createStringHashSet(new FileInputStream("/Users/jdchoi/Downloads/stop-words-collection-2014-02-24/stop-words/stop-words_english_1_en.txt")));
 		List<Term[]> list = vs_model.toTFIDFs(documents);
+//		List<Term[]> list = documents.stream().map(document -> vs_model.toBagOfWords(document, false)).collect(Collectors.toList());
 		int T = vs_model.getTermSize(), D = list.size();
 		td_matrix = new Basic2DMatrix(T, D);
 		
@@ -55,10 +59,10 @@ public class LatentSemanticAnalysis
 			for (Term term : list.get(docID))
 				td_matrix.set(term.getID(), docID, term.getScore());
 		
-		toLSA(k);
+//		toLSA(k);
 	}
 	
-	private void toLSA(int k)
+	void toLSA(int k)
 	{
 		SingularValueDecompositor d = new SingularValueDecompositor(td_matrix);
 		Matrix[] usv = d.decompose();
@@ -96,8 +100,16 @@ public class LatentSemanticAnalysis
 	
 	public List<ObjectDoublePair<String>> getTopSimilarTerms(String term, int k)
 	{
-		// To be filled.
-		return null;
+		List<ObjectDoublePair<String>> list = new ArrayList<>();
+		int termID = vs_model.getID(term);
+		if (termID < 0) return list;
+		
+		for (int i=td_matrix.rows()-1; i>=0; i--)
+			if (i != termID)
+				list.add(new ObjectDoublePair<String>(vs_model.getTerm(i), getCosineSimilarityTerm(termID, i)));
+		
+		Collections.sort(list, Collections.reverseOrder());
+		return (k > list.size()) ? list : list.subList(0, k);
 	}
 	
 	public double getCosineSimilarityTerm(int i, int j)
