@@ -45,7 +45,7 @@ public abstract class AbstractKmeans
 			prevCentroids = currCentroids;
 			currCentroids = estimate(documents, clusters, K, T);
 			distance = averageDistance(prevCentroids, currCentroids, K);
-			System.out.printf("%4d: %5.4f [%s]\n", iter, distance, Joiner.join(clusters.stream().map(cluster -> cluster.size()).collect(Collectors.toList()), ","));
+			System.out.printf("%4d: %5.4f [%s]\n", iter++, distance, Joiner.join(clusters.stream().map(cluster -> cluster.size()).collect(Collectors.toList()), ","));
 		}
 		while (distance > threshold);
 		
@@ -66,7 +66,7 @@ public abstract class AbstractKmeans
 			prevCentroids = currCentroids;
 			currCentroids = estimate(documents, clusters, K, T);
 			distance = averageDistance(prevCentroids, currCentroids, K);
-			System.out.printf("%4d: %5.4f [%s]\n", iter, distance, Joiner.join(clusters.stream().map(cluster -> cluster.size()).collect(Collectors.toList()), ","));
+			System.out.printf("%4d: %5.4f [%s]\n", iter++, distance, Joiner.join(clusters.stream().map(cluster -> cluster.size()).collect(Collectors.toList()), ","));
 		}
 		while (distance > threshold);
 		

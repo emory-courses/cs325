@@ -25,9 +25,6 @@ import edu.emory.mathcs.cs325.ngrams.model.Backoff;
 import edu.emory.mathcs.cs325.ngrams.model.ILanguageModel;
 import edu.emory.mathcs.cs325.ngrams.smoothing.DiscountSmoothing;
 import edu.emory.mathcs.cs325.ngrams.smoothing.NoSmoothing;
-import edu.emory.mathcs.cs325.segment.AbstractSegment;
-import edu.emory.mathcs.cs325.segment.Segment;
-import edu.emory.mathcs.cs325.segment.Sequence;
 import edu.emory.mathcs.cs325.utils.IOUtils;
 
 /**
